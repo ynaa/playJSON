@@ -1,0 +1,61 @@
+@(
+itervalMap : List[(org.joda.time.Interval, Map[ynaa.myEconomy.domain.ExpenseType, Int])],
+snittItervalMap : List[(String, Map[ynaa.myEconomy.domain.ExpenseType, Int])]
+) 
+@import helper._
+
+@main("Oversikt") {
+<script type="text/javascript">
+
+</script>
+  <fieldset>
+    Oversikt over utgifter
+  </fieldset>
+  <fieldset>
+  <table>
+    <thead>
+      <th>&nbsp;</th>
+        @snittItervalMap.head._2.map { expPurchaseMap =>
+          <th>@expPurchaseMap._1.typeName</th>
+      }
+      <th>Sum</th>
+  </thead>
+  <tbody>
+    @snittItervalMap.map { entry =>
+    <tr>
+      <td>@entry._1</td>
+      @entry._2.map { expPurchaseMap =>
+        <td>@expPurchaseMap._2</td>
+      }
+      <td>@entry._2.foldLeft(0)((a, t) => a + t._2)</td>
+    </tr>
+   }
+  </tbody>
+  </table>
+  
+  </fieldset>
+  
+  <fieldset>
+  <table>
+    <thead>
+      <th>&nbsp;</th>
+        @itervalMap.head._2.map { expPurchaseMap =>
+          <th>@expPurchaseMap._1.typeName</th>
+      }
+      <th>Sum</th>
+  </thead>
+  <tbody>
+    @itervalMap.map { entry =>
+    <tr>
+      <td>@entry._1.getStart().monthOfYear().getAsText @entry._1.getStart().year().getAsText</td>
+      @entry._2.map { expPurchaseMap => 
+        <td>@expPurchaseMap._2</td>
+      }
+      <td>@entry._2.foldLeft(0)((a, t) => a + t._2)</td>
+    </tr>
+   }
+  </tbody>
+  </table>
+  
+  </fieldset>
+}

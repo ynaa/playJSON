@@ -1,0 +1,235 @@
+@(
+currentPage: ynaa.myEconomy.domain.Page[ynaa.myEconomy.domain.Purchase],
+typeMap: Map[ynaa.myEconomy.domain.ExpenseType, List[ynaa.myEconomy.domain.ExpenseDetail]],
+expTypeFilter : Option[com.mongodb.casbah.Imports.ObjectId] = None,
+expDetFilter : String = "",
+startFilter : String,
+sluttFilter : String
+) 
+
+@import helper._
+
+@****************************************
+* Helper generating navigation links    *
+****************************************@
+@link(newPage: Int, expTypeFilter : Option[com.mongodb.casbah.Imports.ObjectId] = None, expDetFilter : String = "", startFilter : String = "", sluttFilter : String = "") = @{
+  routes.PurchasesController.list(newPage, expTypeFilter, expDetFilter, startFilter, sluttFilter)
+}
+
+@createDate(date: java.util.Date) = @{
+  val formatter = new java.text.SimpleDateFormat("dd.MM.yyyy")
+  formatter.format(date)
+}
+
+@deleteLink(expTypeFilter : Option[com.mongodb.casbah.Imports.ObjectId] = None, expDetFilter : String = "", startFilter : String = "", sluttFilter : String = "") = {
+  routes.PurchasesController.list(newPage, expTypeFilter, expDetFilter, startFilter, sluttFilter)
+}
+
+@header(title: String, col : Int) = {
+    <th class="col@col header "headerSortUp">
+        @title
+    </th>
+}
+
+@main("Utgift") {
+<script type="text/javascript">
+
+function deletePurchase(pId) {
+	var url = "/purchases/delete/" + pId + location.search;
+	window.location = url
+}
+
+function updateExpDet(form, pid) {
+	var a = form.elements["amount"];
+	var d = form.elements["newExpDet"]
+  form.appendChild(createHiddenField("newAmount", form.elements["amount"].value));
+  
+  form.action = form.action + location.search;
+  form.submit()
+}
+
+function filter(form, name, value) {
+	var a = form.elements["expDet"].value;
+  if(a != -1){
+	  form.submit()
+  }
+}
+
+function updateAmount(form, pid) {
+	if(confirm('Oppdatere beløp?')){
+		updateExpDet(form, pid);
+	}
+}
+function createHiddenField(key, value) {
+	var hiddenField = document.createElement("input");
+  hiddenField.setAttribute("type", "hidden");
+  hiddenField.setAttribute("name", key);
+  hiddenField.setAttribute("value", value);
+  return hiddenField
+}
+
+$(function() {
+    $( "#startpicker").datepicker({dateFormat: 'dd.mm.yy'});
+});
+$(function() {
+		  $( "#stoppicker" ).datepicker({dateFormat: 'dd.mm.yy'});
+});
+
+$(function() { $( "#expType" ).val(getParameterByName("expType")); });
+$(function() { $( "#expDet" ).val(getParameterByName("expDet")); });
+$(function() { $( "#startpicker" ).val(getParameterByName("start")); }); 
+$(function() { $( "#stoppicker" ).val(getParameterByName("stop"));});
+function getParameterByName(name){
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = "[\\?&]" + name + "=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(window.location.search);
+  var ret = "";
+  if(results != null){
+    ret = decodeURIComponent(results[1].replace(/\+/g, " "));
+  }
+  return ret;
+}
+
+</script>
+  <fieldset>
+    <h2>Filter</h2>
+    @form(routes.PurchasesController.filter) {
+    <table>
+    <tr>
+    <td>
+      <dl>
+        <dd>Utgiftstype</dd>
+	      <dt>
+	       <select onchange="javascript:this.form.submit();" name="expType" id="expType">
+          <option value="-1"></option>
+          @typeMap.map{ entry =>
+            @if(expTypeFilter.getOrElse("") == entry._1._id){
+              <option value="@entry._1._id" selected>@entry._1.typeName</option>
+            } else { 
+              <option value="@entry._1._id">@entry._1.typeName</option>
+            }
+          }
+         </select>
+         </dt>
+        </dl>
+        </td>
+        <td>
+        <dl>
+         <dd>Utgiftsdetalj</dd>
+		     <dt>
+		      <select name="expDet" id="expDet" onchange="filter(this.form, this.value);" title="Utgiftsdetalj">
+		      <option value=""></option>
+		      <option value="-2">Ingen</option>
+		      @typeMap.map { entry =>
+              <option value=-1>---@entry._1.typeName---</option> 
+              @entry._2.map { detail => 
+                 <div>heisan yngvis @expDetFilter  @detail._id</div>
+                 @if(expDetFilter == detail._id){
+                 <div>heisan yngvis</div>
+                <option value="@detail._id" selected>@detail.description</option>
+		            } else { 
+		                <option value="@detail._id">@detail.description</option>
+		            }
+              }
+		       }
+		    </select>
+		    </dt>
+		    </dl>
+		    </td>
+		    <td>
+	      <input type="hidden" value="no" id="locale">
+	      <dl>
+	      <dd>Startdato</dd>
+	      <dt><input type="text" id="startpicker" name="start" onchange="javascript:this.form.submit();"></dt>
+	      </dl>
+	      </td>
+	      <td>
+	      <dl>
+	       <dd>Sluttdato</dd>
+	      <dt><input type="text" id="stoppicker" name="stop" onchange="javascript:this.form.submit();"></dt>
+	      </dl>
+      </dl>
+      </td>
+      </tr>
+      </table>
+    }
+  </fieldset>
+  <fieldset>Totalsum for dette søket er @currentPage.totalSum</fieldset>
+  <fieldset>
+    <h2>Liste med utgifter, @currentPage.total type(r)</h2>
+    <div>
+    <table class="detailsene zebra-striped">
+      <thead>
+        <tr>
+          @header("Beskrivelse", 1)
+          @header("Dato", 2)
+          @header("Beløp", 3)
+          @header("Detalj", 4)
+          @header("Slett", 4)
+        </tr> 
+      </thead>
+      <tbody>
+        @Option(currentPage.items).filterNot(_.isEmpty).map { purchases =>
+          @purchases.map { purchase =>
+          <form name="updatePurhcase" method="POST" action="/purchases/update/@purchase._id">
+        <tr>
+          <td>@purchase.description</td>
+          <td>@createDate(purchase.interestDate)</td>
+          <td><input type="text" id="amount" value="@purchase.amount" onchange="updateAmount(this.form, '@purchase._id')"/></td>
+          <td>
+        <select id="newExpDet" name="newExpDet" onchange="updateExpDet(this.form, '@purchase._id')">
+            <option value=""></option>
+            @typeMap.map { entry =>
+              <option value=-1>---@entry._1.typeName---</option> 
+              
+              @entry._2.map { detail => 
+                @if(detail._id == (purchase.expenseDetail match {
+                  case Some(ed) => ed._id
+                  case None => -1
+                })) {
+                  <option value="@detail._id" selected>@detail.description</option>
+                } else{
+                  <option value="@detail._id">@detail.description</option>
+                }
+              }
+             }
+          </select>
+          </td>
+          <td>
+            <a href="javascript:deletePurchase('@purchase._id')">Slett</a>
+          </td>
+        </tr>
+        </form>
+        }
+      </tbody>
+    </table> 
+    <div id="pagination" class="pagination">
+      <ul>
+          @currentPage.prev.map { page =>
+              <li class="prev">
+                  <a href="@link(page, expTypeFilter, expDetFilter, startFilter, sluttFilter)">&larr; Previous</a>
+              </li> 
+          }.getOrElse {
+              <li class="prev disabled">
+                  <a>&larr; Previous</a>
+              </li>
+          }
+          <li class="current">
+              <a>Displaying @(currentPage.offset + 1) to 
+              @(currentPage.offset + purchases.size) of @currentPage.total</a>
+          </li>
+          @currentPage.next.map { page =>
+              <li class="next">
+                  <a href="@link(page, expTypeFilter, expDetFilter, startFilter, sluttFilter)">Next &rarr;</a>
+              </li> 
+          }.getOrElse {
+              <li class="next disabled">
+                  <a>Next &rarr;</a>
+              </li>
+          }
+        }
+      </ul>
+        </div>
+  </fieldset>
+}

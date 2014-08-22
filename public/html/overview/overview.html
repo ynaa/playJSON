@@ -1,0 +1,36 @@
+<div>
+  <div>
+    <h2>Oversikt over utgifter</h2>
+  </div>
+  <div>
+    <div class="Table" width="100%">
+      <div class="Heading">
+        <div class="Cell">&nbsp;</div>
+        <div class="Cell" ng-repeat="expType in expenseTypes">
+          <p>{{expType.typeName}}</p>
+        </div>
+      </div>
+      <div>Snitt siste tiden</div>
+      <div class="Row" ng-repeat="key in keys(averageIntervals) | orderBy:key">
+        <div class="Cell">
+          {{key}}
+				</div>
+        <div class="Cell" ng-repeat="sum in averageIntervals[key]">
+          {{sum}}
+        </div>
+      </div>
+      <div>Oversikt siden starten</div>
+      <div class="Row" ng-repeat="key in keys(sumByIntervals)  | orderObjectBy:true">
+        <div class="Cell" ng-if="isNaN(key) || key.length != 4">
+          {{key}}
+        </div>
+        <div ng-if="!isNaN(key) && key.length == 4" class="Cell" ng-init="toggle=true">
+          <a href="" ng-click="toggleYears(key, toggle); toggle=!toggle">{{key}}</a>
+        </div>
+        <div class="Cell" ng-repeat="(expTypeName, sum) in sumByIntervals[key]">
+          <a href='#/purchaselist?{{createUrlparameters(expTypeName, key)}}'>{{sum}}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

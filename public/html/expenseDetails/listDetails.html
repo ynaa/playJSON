@@ -1,0 +1,45 @@
+<div>
+  <header>
+   <hgroup>
+      <h2>Registrer ny utgiftsdetalj</h2>
+   </hgroup>
+  </header>
+  <form name="regform" ng-submit="add(newExpDet)">
+    <input name="detName" required placeholder="Navn på utgiftsdetalj" ng-model="newExpDet.detName">
+    <input name="detTags" required placeholder="Tags" ng-model="newExpDet.detTags">
+    <select name="expType" required ng-model="newExpDet.expType" ng-options="expType._id as expType.typeName for expType in expenseTypes">
+     <option value="">-- Velg utgiftsttype --</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Legg til</button>
+  </form>
+</div>
+<div>
+  <h2>Liste med utgiftsdetaljer, {{datas.length}} type(r)</h2>
+  <div class="Table">
+    <div class="Heading">
+     <div class="Cell"><p>Beskrivelse</p></div>
+     <div class="Cell"><p>Søkeord</p></div>
+     <div class="Cell"><p>Type</p></div>
+     <div class="Cell"><p>Vis utgifter</p></div>
+     <div class="Cell"><p>Slett</p></div>
+    </div>
+    <div class="Row" ng-repeat="data in expDetList track by $index">
+      <div class="Cell">
+        <input name="detName1" ng-model="expDetList[$index].description" ng-change="edited($index)">
+      </div>
+      <div class="Cell">
+        <input name="detTags1" ng-model="expDetList[$index].searchTags" ng-change="edited($index)">
+      </div>
+      <div class="Cell">
+        <select name="expType1" ng-model="expDetList[$index].expenseType" ng-change="edited($index)" ng-options="expType as expType.typeName for expType in expenseTypes track by expType._id" >
+        </select>
+      </div>
+      <div class="Cell" align="Center">
+        <a href='#/purchaselist?expDet={{expDetList[$index]._id}}'>Vis</a>
+      </div>
+      <div class="Cell">
+        <button ng-click='deleteExpDetail($index)'>Slett</button>
+      </div>
+    </div>
+  </div>
+</div>

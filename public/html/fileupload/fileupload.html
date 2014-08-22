@@ -1,0 +1,30 @@
+<div>
+	<header>
+		<hgroup>
+			<h2>Last opp fil</h2>
+		</hgroup>
+	</header>
+	<form name="regform" ng-submit="uploadFile(csvFile)">
+		<div>
+			<input type="radio" ng-model="csvFile.bank" value="Mastercard">Mastercard<br>
+			<input type="radio" ng-model="csvFile.bank" value="Sparebanken">Sparebanken<br>
+			<input type="radio" ng-model="csvFile.bank" value="Skandiabanken">Skandiabanken<br>
+			<input type="radio" ng-model="csvFile.bank" value="Visakreditt">Visakreditt<br>
+		</div>
+		<div>
+			<input type="file" ng-model="csvFile.fileToUpload"
+				onchange="angular.element(this).scope().setFiles(this)" />
+		</div>
+		<button type="submit" class="btn btn-primary">Last opp fil</button>
+	</form>
+</div>
+<div>
+	<header>
+		<hgroup>
+			<h2>Oppdater database</h2>
+		</hgroup>
+	</header>
+	<div>
+		<button ng-click='updateDatabase()'>Oppdater utgifter</button>
+	</div>
+</div>

@@ -1,0 +1,83 @@
+<div>
+  <div>
+    <h2>Filter</h2>
+     <!-- ng-submit="filter(filterFields)" -->
+    <form name="regform">
+      <div class="Table">
+      <div class="Row">
+        <div class="FilterCell">
+				<dl>
+	        <dd>Utgiftsttype</dd>
+	        <dt>
+		        <select name="expType" ng-model="filterFields.expType" 
+		        ng-change="filter(filterFields)" ng-options="expType._id as expType.typeName for expType in expenseTypes">
+		          <option value="">-- Velg utgiftsttype --</option>
+		        </select>
+	        </dt>
+	      </dl>
+	      </div>
+        <div class="FilterCell">
+        <dl>
+	        <dd>Utgiftsdetalj</dd>
+	        <dt>
+	          <select name="expDet" ng-model="filterFields.expDet" ng-change="filter(filterFields)" ng-options="expDet._id as expDet.description for expDet in expenseDetails">
+	            <option value="">-- Velg utgiftstdetalj --</option>
+	          </select>
+	        </dt>
+	      </dl>
+	      </div>
+        <div class="FilterCell">
+        <dl>
+	        <dd>Startdato</dd>
+	        <dt>
+	          <input type="text" name="start" ng-change="filter(filterFields)" ng-model="filterFields.start" datepicker>
+	        </dt>
+	      </dl>
+	      </div>
+        <div class="FilterCell">
+        <dl>
+	        <dd>Sluttdato</dd>
+	        <dt>
+	         <input type="text" name="end" ng-change="filter(filterFields)" ng-model="filterFields.end" datepicker>
+	        </dt>
+	      </dl>
+	      </div>
+	      </div>
+      </div>
+    </form>
+  </div>
+  <br/>
+  <div style="float: none">
+    <h2>Totalsum for dette søket er {{purchaseSum}}</h2>  
+  </div> 
+  <div>
+    <h2>Liste med utgifter, {{purchasesList.length}} type(r)</h2>
+  </div>
+  <div class="Table">
+    <div class="Heading">
+     <div class="Cell"><p>Beskrivelse</p></div>
+     <div class="Cell"><p>Dato</p></div>
+     <div class="Cell"><p>Beløp</p></div>
+     <div class="Cell"><p>Detalj</p></div>
+     <div class="Cell"><p>Slett</p></div>
+    </div>
+    <div class="Row" ng-repeat="purchase in purchasesList track by $index">
+      <div class="Cell">
+        {{purchasesList[$index].description}}
+      </div>
+      <div class="Cell">
+        {{ purchasesList[$index].bookedDate | date:'dd.MM.yyyy' }}
+      </div>
+      <div class="Cell">
+        <input name="amount" ng-model="purchasesList[$index].amount" ng-change="edited($index)">
+      </div>
+      <div class="Cell">
+        <select name="expDet" ng-model="purchasesList[$index].expenseDetail" ng-change="edited($index)" ng-options="expDet as expDet.description for expDet in expenseDetails track by expDet._id" >
+        </select>
+      </div>
+      <div class="Cell">
+        <button ng-click='deletePurchase($index)'>Slett</button>
+      </div>
+    </div>
+  </div>
+</div>

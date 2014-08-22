@@ -1,0 +1,32 @@
+<div>
+  <header>
+	 <hgroup>
+		  <h2>Registrer ny utgiftstype</h2>
+	 </hgroup>
+  </header>
+  <form name="regform" ng-submit="add(newExpType)">
+    <input name="typeName" placeholder="Navn på utgiftstype" ng-model="newExpType.typeName">
+    <button type="submit" class="btn btn-primary">Legg til</button>
+	</form>
+</div>
+<div>
+	<h2>Liste med utgiftstyper, {{datas.length}} type(r)</h2>
+	<div class="Table">
+    <div class="Heading">
+	   <div class="Cell"><p>Utgiftsnavn</p></div>
+     <div class="Cell"><p>Detaljer</p></div>
+     <div class="Cell"><p>Slett</p></div>
+		</div>
+    <div class="Row" ng-repeat="data in expenseTypes track by $index">
+      <div class="Cell">
+        <input name="typeName1" ng-model="expenseTypes[$index].typeName" ng-change="edited($index)">
+      </div>
+      <div class="Cell">
+        <a href="#/detlist/{{expenseTypes[$index]._id}}" title="">Vis</a>
+      </div>
+      <div class="Cell">
+        <button ng-click='deleteExpType($index)'>Slett</button>
+      </div>
+		</div>
+  </div>
+</div>
