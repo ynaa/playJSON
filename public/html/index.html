@@ -1,22 +1,31 @@
 <!doctype html>
 <html ng-app="myEconomyApp">
-	<head>
-	  <meta charset="utf-8">
-	  <title>Utgiftstyper</title>
-    <link rel="stylesheet" media="screen" href="/stylesheets/myCss.css">
-    <link rel="stylesheet" media="screen" href="/stylesheets/jquery-ui.css">
-    <script src="../javascripts/jquery-2.1.1.js"></script>
-    <script src="../javascripts/jquery-ui.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-route.js"></script>    
-    <script src="../javascripts/app.js"></script>
-    <script src="expenseTypes/expensetypes.js"></script>
-    <script src="expenseDetails/expensedetails.js"></script>
-    <script src="purchases/purchaseList.js"></script>
-    <script src="overview/overview.js"></script>
-    <script src="fileupload/fileupload.js"></script>
-	</head>
-	<body>
-	  <div ng-view></div>
-	</body>
+<head>
+   <meta charset="utf-8">
+   <title>Utgiftstyper</title>
+   <link rel="stylesheet" media="screen" href="/stylesheets/myCss.css">
+   <link rel="stylesheet" media="screen" href="/stylesheets/jquery-ui.css">
+   <script src="../javascripts/jquery-2.1.1.js"></script>
+   <script src="../javascripts/jquery-ui.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-route.js"></script>    
+   <script src="../javascripts/app.js"></script>
+   <script src="expenseTypes/expensetypes.js"></script>
+   <script src="expenseDetails/expensedetails.js"></script>
+   <script src="purchases/purchaseList.js"></script>
+   <script src="overview/overview.js"></script>
+   <script src="fileupload/fileupload.js"></script>
+</head>
+<body>
+    <nav id='web-nav'>
+        <ul id="menu">
+            <li class='active'><a href="#/list"><span>Typer</span></a></li>
+            <li><a href="#/detlist"><span>Detaljer</span></a></li>
+            <li><a href="#/purchaselist"><span>Utgifter</span></a></li>
+            <li><a href='#/overview'><span>Oversikt</span></a></li>
+            <li class='last'><a href='#/fileupload'><span>Last opp</span></a></li>
+        </ul>
+    </nav>
+    <div id="content" ng-view></div> 
+</body>
 </html>

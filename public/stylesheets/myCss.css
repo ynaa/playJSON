@@ -23,3 +23,47 @@
   padding-left: 5px;
   padding-right: 5px;
 }
+html, body {
+  height: 100%;
+  width: 100%;
+}
+#content {
+  /*background: url("http://mammothmedia.tv/admin/wp-content/themes/mame/assets/img/menu-bg.png") repeat scroll 0 0 rgba(0, 0, 0, 0);*/
+  background: #A4A4A4;
+  float: right;
+  min-height: 100%;
+  position: relative;
+  padding-left: 10px;
+  width: 80%;
+}
+#web-nav{
+  /*background: url("http://mammothmedia.tv/admin/wp-content/themes/mame/assets/img/menu-bg.png") repeat scroll 0 0 rgba(0, 0, 0, 0);*/
+  background: #424242;
+  height: 100%;
+  left: 0;
+  min-height: 600px;
+  overflow: auto;
+  position: fixed;
+  width: 20%;
+  z-index: 20;
+} 
+#web-nav #menu {
+    color: #fff;
+    float: right;
+    list-style-type: none;
+    margin-right: 40px;
+    text-align: right;
+}
+#web-nav #menu li {
+    font-size: 1.2em;
+    height: 35px;
+    width: 100px;
+}
+#web-nav #menu a {
+    text-decoration: none;
+    text-transform: uppercase;
+}
+a {
+    color: #fff;
+    text-decoration: none;
+}

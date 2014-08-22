@@ -90,7 +90,6 @@ function createIntervals($scope, $http) {
 				function(data, status, headers, config) {
 				$scope.intervals.allMonths.name = "Siden starten";
 				$scope.averageIntervals[$scope.intervals.allMonths.name] = data.result;
-				console.log($scope.averageIntervals);
 				});
 			for (var i = 0; i < $scope.intervals.yearIntervals.length; i++) {
 				var item = $scope.intervals.yearIntervals[i];
@@ -112,7 +111,6 @@ function getExpTypeId($scope, key){
 	return "";
 }
 function findInterval($scope, intervalName){
-	console.log(intervalName)
 	if(isNaN(intervalName)){
 		var interval = $scope.intervals[intervalName];
 		if(!interval) {

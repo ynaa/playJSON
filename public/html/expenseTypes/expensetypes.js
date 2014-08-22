@@ -17,7 +17,6 @@ expTypeControllers.controller("ExpenseTypesController", function($scope, $http) 
 		});
 	};
 	$scope.edited = function(index) {
-		 console.log("lagrer")
 		var responsePromise = $http.post("/expenseTypes/edit/" + $scope.expenseTypes[index]._id, $scope.expenseTypes[index], {});
 		responsePromise.error(function(data, status, headers, config) {
 			alert("Editering feilet!");

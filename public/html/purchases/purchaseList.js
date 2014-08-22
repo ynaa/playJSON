@@ -107,7 +107,6 @@ function populateFormDataFromParams($scope, $routeParams){
 	var end = $routeParams.stop;
 	for(var i = 0; i < $scope.expenseTypes.length; i++){
 		if($scope.expenseTypes[i]._id == et) {
-			console.log("Treff");
 			$scope.filterFields.expType = $scope.expenseTypes[i]._id;
 			break;
 		}
@@ -115,7 +114,6 @@ function populateFormDataFromParams($scope, $routeParams){
 	
 	$scope.filterFields.start = createDate(start);
 	$scope.filterFields.end = createDate(end);
-	console.log($scope.filterFields + " " + et + " " + $scope.filterFields.star + " " + $scope.filterFields.end);
 }
 
 function createDate(dateAsLong) {
@@ -128,7 +126,6 @@ function createDate(dateAsLong) {
     var dd  = daten.getDate().toString();             
                         
     var dateString =  (dd[1]?dd:"0"+dd[0]) + '.' + (mm[1]?mm:"0"+mm[0]) + '.' +yyyy ;
-    console.log(dateString);
     
     return dateString;
 };  

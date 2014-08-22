@@ -7,4 +7,6 @@ logs/
 .setttings
 .classpath
 .settings/org.scala-ide.sdt.core.prefs
+playJSON.sublime-project
+playJSON.sublime-workspace
 
