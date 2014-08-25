@@ -3,23 +3,26 @@ import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
 import play.api.test._
+import play.api.mvc._
+import play.api.test._
+import scala.concurrent.Future
 import play.api.test.Helpers._
-import controllers.OverviewController
+import controllers._
 import org.joda.time.DateTime
 
-@RunWith(classOf[JUnitRunner])
-class OverviewSpec  extends Specification {
+object OverviewSpec  extends Specification with Results {
 
   "Overview" should {
-      val test = OverviewController
-    "create intervall" in new WithApplication{
-        val ints = test.createIntervals(new DateTime(DummyDb.createDate(2013, 0, 1)), new DateTime)
-        println(ints)
-        println(ints.size)
+    
+    "return intervall" in {
+      running(FakeApplication()) {
+
+        val show = route(FakeRequest(GET, "/overview")).get
         
-        val names = ints.map(int => int.getStart.year.getAsText + " - " + int.getStart.monthOfYear.getAsText)
-        names.foreach(println(_))
-        ints.size must be equalTo(20)
+        status(show) must equalTo(OK)
+        contentType(show) must beSome.which(_ == "application/json")
+        
+      }
     }
   }
 }

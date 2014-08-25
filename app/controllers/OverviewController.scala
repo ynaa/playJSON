@@ -9,10 +9,11 @@ import java.util.Date
 import org.joda.time._
 import ynaa.jsontest.domain._
 import play.api.libs.json._
-import controllers.helper._
 import helpers.Writes._
 
+
 object OverviewController extends Controller {
+
   val db : MyEconomyDbApi = MongoDBSetup.dbApi
 
   def getIntervals = Action {
@@ -37,28 +38,15 @@ object OverviewController extends Controller {
     Ok(Json.toJson(Json.obj("result" -> result)))
   }
 
-  def getYearInterval(year: Int) = Action {
-    val thisYearInterval =
-      for(month <- 1 to 12) yield intervalFromStartOfMonthToStartOfNextMonth(
-        new DateTime(year, month, 1, 0, 0), new DateTime(year, month, 1, 0, 0))
-
-    Ok(Json.toJson(Json.obj("result" -> Json.toJson(thisYearInterval))))
-  }
-  def firstDateOfYear(year : Int) = new DateTime(year, 1, 1, 0, 0)
-
-  def lastDateOfYear(year : Int) = new DateTime(year, 12, 31, 0, 0)
-
   def getByInterval(startDat : String, end : String) = Action { request =>
+    
     val startDate = createDateTime(startDat)
     val endDate = createDateTime(end)
     val interval = new Interval(startDate, endDate)
     val result = sumByExpenseType(db.getExpenseTypes, interval, getNumberOfMontsInInterval(interval) > 1)
 
     Ok(Json.toJson(Json.obj("result" -> result)))
-  }
-
-  def createDateTime(dateString: String) = {
-    new DateTime(new BigDecimal(new java.math.BigDecimal(dateString)).toLong)
+    
   }
 
   def show() = Action { request =>
@@ -87,50 +75,12 @@ object OverviewController extends Controller {
     Ok(Json.toJson(Json.obj("result" -> result)))
   }
 
-  def findSumByExpenseTypeForIntervals(intervals : List[Interval], expenses : List[ExpenseType], snitt : Boolean = false) = {
-    Map(intervals.map(
-      int => (int ->
-        sumByExpenseType(expenses, int, snitt))).map { a => a._1 -> a._2 } : _*)
+  def getYearInterval(year: Int) = Action {
+    val thisYearInterval =
+      for(month <- 1 to 12) yield intervalFromStartOfMonthToStartOfNextMonth(
+        new DateTime(year, month, 1, 0, 0), new DateTime(year, month, 1, 0, 0))
+
+    Ok(Json.toJson(Json.obj("result" -> Json.toJson(thisYearInterval))))
   }
 
-  def sumByExpenseType(expenses : List[ExpenseType], interval : Interval, average : Boolean) = {
-    Map(expenses.map(et => {
-      val purchases = db.getPurchasesByExpenseTypeAndDate(et, interval)
-      val numOfMonths = getNumberOfMontsInInterval(interval)
-      val sum = purchases.foldLeft(0.0)((tempSum, p) => p.amount + tempSum)
-      average match {
-        case true => (et.typeName -> (sum / numOfMonths).toInt)
-        case false => (et.typeName -> sum.toInt)
-      }
-    }).map { a => a._1 -> a._2 } : _*)
-  }
-
-  private def intervalFromStartOfMonthToStartOfNextMonth(startDate : DateTime, endDate : DateTime) = {
-    val start = startDate.dayOfMonth().withMinimumValue.withTimeAtStartOfDay
-    val end = endDate.plusMonths(1).dayOfMonth().withMinimumValue.withTimeAtStartOfDay
-    new Interval(start, end)
-  }
-
-  def createIntervals(startDate : DateTime, endDate : DateTime) : List[Interval] = {
-    if (!endDate.isAfter(startDate)) {
-      Nil
-    } else {
-      createInterval(endDate) :: createIntervals(startDate, endDate.minusMonths(1))
-    }
-  }
-
-  private def createInterval(date : DateTime) = {
-    val startOfMonth = date.dayOfMonth().withMinimumValue.withTimeAtStartOfDay
-    val endOfMonth = date.plusMonths(1).dayOfMonth().withMinimumValue.withTimeAtStartOfDay
-    new Interval(startOfMonth, endOfMonth)
-  }
-
-  private def getNumberOfMontsInInterval(interval : Interval) = {
-    val period = new Period(interval.getStart, interval.getEnd)
-    period.getYears * 12 + period.getMonths
-  }
-
-  def getNameOfInterval(int : Interval) = {
-    int.getStart.year.getAsText + " - " + int.getStart.monthOfYear.getAsText
-  }
 }

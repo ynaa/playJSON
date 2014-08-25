@@ -11,7 +11,6 @@ import ynaa.jsontest.domain._
 import java.text.SimpleDateFormat
 import org.joda.time.DateTime
 import helpers.Writes._
-import controllers.helper._
 
 object PurchaseController extends Controller {
 
