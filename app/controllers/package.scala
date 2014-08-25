@@ -6,8 +6,6 @@ import org.joda.time._
 import ynaa.jsontest.domain._
 
 package object controllers {
-
-  val dben : MyEconomyDbApi = MongoDBSetup.dbApi
   
   val convertToDate = (dateString : String) => {
     if (dateString == "") {
@@ -19,7 +17,6 @@ package object controllers {
     }
   }
 
-
   def firstDateOfYear(year : Int) = new DateTime(year, 1, 1, 0, 0)
 
   def lastDateOfYear(year : Int) = new DateTime(year, 12, 31, 0, 0)
@@ -28,13 +25,14 @@ package object controllers {
     new DateTime(new BigDecimal(new java.math.BigDecimal(dateString)).toLong)
   }
   
-  def findSumByExpenseTypeForIntervals(intervals : List[Interval], expenses : List[ExpenseType], snitt : Boolean = false) = {
+  def findSumByExpenseTypeForIntervals(intervals : List[Interval], dben : MyEconomyDbApi, snitt : Boolean = false) = {
     Map(intervals.map(
       int => (int ->
-        sumByExpenseType(expenses, int, snitt))).map { a => a._1 -> a._2 } : _*)
+        sumByExpenseType(dben, int, snitt))).map { a => a._1 -> a._2 } : _*)
   }
 
-  def sumByExpenseType(expenses : List[ExpenseType], interval : Interval, average : Boolean) = {
+  def sumByExpenseType(dben : MyEconomyDbApi, interval : Interval, average : Boolean) = {
+    val expenses = dben.getExpenseTypes
     Map(expenses.map(et => {
       val purchases = dben.getPurchasesByExpenseTypeAndDate(et, interval)
       val numOfMonths = getNumberOfMontsInInterval(interval)

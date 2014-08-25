@@ -43,14 +43,13 @@ object OverviewController extends Controller {
     val startDate = createDateTime(startDat)
     val endDate = createDateTime(end)
     val interval = new Interval(startDate, endDate)
-    val result = sumByExpenseType(db.getExpenseTypes, interval, getNumberOfMontsInInterval(interval) > 1)
+    val result = sumByExpenseType(db, interval, getNumberOfMontsInInterval(interval) > 1)
 
     Ok(Json.toJson(Json.obj("result" -> result)))
     
   }
 
-  def show() = Action { request =>
-    val expenses = db.getExpenseTypes
+  def show() = Action { request =>    
     val purchases = db.getPurchases()
 
     val firstPurchase = db.getFirstDate
@@ -59,12 +58,12 @@ object OverviewController extends Controller {
     val lastMonthInterval = intervalFromStartOfMonthToStartOfNextMonth(lastPurchase, lastPurchase)
     val threeMonthsInterval = intervalFromStartOfMonthToStartOfNextMonth(lastPurchase.minusMonths(2), lastPurchase)
     val allMonthsInterval = intervalFromStartOfMonthToStartOfNextMonth(firstPurchase, lastPurchase)
-    val snittIntervals = findSumByExpenseTypeForIntervals(lastMonthInterval :: threeMonthsInterval :: allMonthsInterval :: Nil, expenses, true)
+    val snittIntervals = findSumByExpenseTypeForIntervals(lastMonthInterval :: threeMonthsInterval :: allMonthsInterval :: Nil, db, true)
     val snittene = Map("Siden starten" -> snittIntervals(allMonthsInterval),
       "3 siste måneder" -> snittIntervals(threeMonthsInterval),
       "Siste måned" -> snittIntervals(lastMonthInterval))
     val intervals = createIntervals(firstPurchase, new DateTime)
-    val itervalExpPurchaseList = findSumByExpenseTypeForIntervals(intervals.reverse, expenses)
+    val itervalExpPurchaseList = findSumByExpenseTypeForIntervals(intervals.reverse, db)
 
     val jsonResult = itervalExpPurchaseList.map(iep => (getNameOfInterval(iep._1) -> iep._2))
 
