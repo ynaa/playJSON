@@ -1,8 +1,11 @@
 package controllers
 
+import db._
 import org.specs2.mutable._
 import java.util._
 import org.joda.time._
+import ynaa.jsontest.domain._
+import com.mongodb.casbah.Imports._
 
 class PackageSpec extends Specification {
 
@@ -39,13 +42,23 @@ class PackageSpec extends Specification {
 			12 must beEqualTo(months)
 			
 		}
-		"end with 'world'" in {
+		"get sums from empty db" in {
+			val db = DummyDb
+			db.purchases = Nil
+			db.expenseTypes = Nil
+			db.expenseDetails = Nil
+			val interval = new Interval(firstDateOfYear(2000), firstDateOfYear(2001))
+			val emptySums = sumByExpenseType(db, interval, false)
+			emptySums must beEmpty
+
+			db.expenseTypes = ExpenseType(new ObjectId(), "Type") :: Nil
+			val oneSums = sumByExpenseType(db, interval, false) 
+			oneSums must not be empty
+			oneSums must haveKey ("Type")
+			oneSums must havePairs ("Type" -> 0)
+						
+			
 			"Hello world" must endWith("world")
 		}
 	}
 }
-
-
-/*
-Hva er planen egentlig for helgen? er det noe felles overnatting/transport, eller er planen at hver enkelt fikser det selv?
-*/
