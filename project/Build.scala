@@ -10,7 +10,7 @@ object ApplicationBuild extends Build {
   import Repos._
   
   val appName         = "playJSON"
-  val appVersion      = "1.0-SNAPSHOT"
+  val appVersion      = "1.0"
     
   val buildScalaVersion = "2.11.1"
     
