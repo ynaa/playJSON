@@ -5,8 +5,15 @@ import com.mongodb.casbah._
 
 object MongoDBSetup {
 
-  val dbApi : MyEconomyDbApi = DummyDb //new MongoDb
+  val dbApi : MyEconomyDbApi = new MongoDb
   val dbName = Play.application().configuration().getString("mongodb.default.db")
-  val mongoDB = MongoClient()(dbName)
+  val mongoURI = Play.application().configuration().getString("mongodb.uri")  
+  val uri = MongoClientURI(mongoURI)
+  val mDb = MongoClient(uri)
+  val mongoDB = mDb(dbName)
+
+  val mongoDB1 = MongoClient()(dbName)
+  //println("mongoDB1 " + mongoDB1("purchase").count())
+  
 
 }
