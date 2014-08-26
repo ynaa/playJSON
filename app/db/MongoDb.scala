@@ -72,7 +72,7 @@ class MongoDb extends MyEconomyDbApi {
     expTypeId : Option[ObjectId] = None,
     expDetId : String = "",
     start : DateTime = null,
-    slutt : DateTime = null) : List[Purchase] = {
+    slutt : DateTime = null) : Page[Purchase] = {
     Purchase.getPurchases(page, pageSize, orderBy, expTypeId, expDetId, start, slutt)
   }
 

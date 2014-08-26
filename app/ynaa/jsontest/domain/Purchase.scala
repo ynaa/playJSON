@@ -36,7 +36,7 @@ object Purchase extends ModelCompanion[Purchase, ObjectId] {
     expTypeId : Option[ObjectId] = None,
     expDetId : String = "",
     start : DateTime = null,
-    slutt : DateTime = null) : List[Purchase] = {
+    slutt : DateTime = null) : Page[Purchase] = {
    
     val where = createWhere(expTypeId, expDetId, start, slutt)
     val ascDesc = if (orderBy > 0) -1 else 1
@@ -46,8 +46,7 @@ object Purchase extends ModelCompanion[Purchase, ObjectId] {
     val totalRows = count(where);
     val offset = pageSize * page
     val purchases = find(where).sort(order).limit(pageSize).skip(offset).toSeq
-//    Page(purchases, page, offset, totalRows, sum)
-    purchases.toList
+    Page(purchases, page, offset, totalRows, sum)
   }
   
   def getPurhcaseByExpDetId(expDetId : Option[ObjectId]) = {

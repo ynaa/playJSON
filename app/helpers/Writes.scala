@@ -110,4 +110,18 @@ object Writes {
     (JsPath \ "archiveref").read[String] and
     (JsPath \ "expenseDetail").readNullable[ExpenseDetail])(Purchase.apply _)
 
+
+/*case class Page[A](items : Seq[A], page : Int, offset : Long, total : Long, totalSum : Long)   */
+
+implicit val pageWrites = new Writes[Page[Purchase]] {
+    def writes(page : Page[Purchase]) = {
+      Json.obj(
+          "items" -> page.items,
+          "page" -> page.page,
+          "offset" -> page.offset,
+          "total" -> page.total,
+          "totalSum" -> page.totalSum
+      )
+    }
+  }
 }

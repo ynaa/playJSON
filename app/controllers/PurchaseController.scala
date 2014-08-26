@@ -22,13 +22,15 @@ object PurchaseController extends Controller {
       case Some(et) => Some(new ObjectId(et))
       case None => None
     }
-    val purchases = db.getPurchases(page, 0, 0, exTypeObjectId, expDetId, convertToDate(start), convertToDate(slutt))
+    val purchases = db.getPurchases(page, 10, 1, exTypeObjectId, expDetId, convertToDate(start), convertToDate(slutt))    
+    val expDets = db.getExpenseDetails.map{ ed => Json.toJson(ed) }    
+    //val result = Map("purchasesList" -> purchases.map{ purchase => Json.toJson(purchase)}, "expDetList" -> expDets, "expTypesList" -> expTypes)
+
+    val purchasesAsJson = Json.toJson(purchases)
     
-    val expDets = db.getExpenseDetails.map{ ed => Json.toJson(ed) }
-    val expTypes = db.getExpenseTypes.map{ et => Json.toJson(et) }
-    val result = Map("purchasesList" -> purchases.map{ purchase => Json.toJson(purchase)}, "expDetList" -> expDets, "expTypesList" -> expTypes)
+    val result = Map("purchasesList" -> purchasesAsJson, "expDetList" -> expDets)
     
-    Ok(Json.toJson(Json.obj("result" -> result)))
+    Ok(Json.toJson(Json.obj("purchasesList" -> purchasesAsJson, "expDetList" -> expDets)))
   }
 
   def edit(pId : String) = Action { request =>
@@ -53,12 +55,5 @@ object PurchaseController extends Controller {
   def delete(pId : String) = Action {
     db.deletePurchase(new ObjectId(pId))
     Ok("OK")
-  }
-  
-  
-  def filter = Action {
-    val purchases = db.getPurchases()
-    val map = purchases.map{ purchase => Json.toJson(purchase)}
-    Ok(Json.toJson(Json.obj("purchaseList" -> map)))
   }
 }

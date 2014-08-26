@@ -51,7 +51,7 @@
     <h2>Totalsum for dette søket er {{purchaseSum}}</h2>  
   </div> 
   <div>
-    <h2>Liste med utgifter, {{purchasesList.length}} type(r)</h2>
+    <h2>Liste med utgifter, {{pagination.totalSize}} type(r)</h2>
   </div>
   <div class="Table">
     <div class="Heading">
@@ -79,5 +79,26 @@
         <button ng-click='deletePurchase($index)'>Slett</button>
       </div>
     </div>
+
+<div id="content1">
+  <ul class="pagination" ng-if="1 < pagination.numPages">
+    <li ng-if="true" ng-class="{ disabled : pagination.current == 0 }">
+        <a href="" ng-click="setCurrent(0)">&laquo;</a>
+    </li>
+    <li ng-if="true" ng-class="{ disabled : pagination.current == 0 }" class="ng-scope">
+        <a href="" ng-click="setCurrent(pagination.current - 1)" class="ng-binding">‹</a>
+    </li>
+    <li ng-repeat="pageNumber in pagination.pages track by $index" ng-class="{ active : pagination.current == pageNumber, disabled : pageNumber == '...' }">
+        <a href="" ng-click="setCurrent(pageNumber)">{{ pageNumber }}</a>
+    </li>
+    <li ng-if="true" ng-class="{ disabled : pagination.current == pagination.numPages }" class="ng-scope">
+        <a href="" ng-click="setCurrent(pagination.current + 1)" class="ng-binding">›</a>
+    </li>
+    <li ng-if="true"  ng-class="{ disabled : pagination.current == pagination.numPages }">
+        <a href="" ng-click="setCurrent(pagination.numPages - 1)">&raquo;</a>
+    </li>
+  </ul>
+</div>
+
   </div>
 </div>

@@ -40,7 +40,7 @@ trait MyEconomyDbApi {
     expTypeId : Option[ObjectId] = None,
     expDetId : String = "",
     start : DateTime = null,
-    slutt : DateTime = null) : List[Purchase];
+    slutt : DateTime = null) : Page[Purchase];
 //  
   def updatePurchase(newPurchase : Purchase);
   

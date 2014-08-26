@@ -158,12 +158,17 @@ object DummyDb extends MyEconomyDbApi {
   
   override def getPurchases(page : Int = 0, pageSize : Int = 10, orderBy : Int = 1, 
                             expTypeId : Option[ObjectId] = None,expDetId : String = "",
-                            start : DateTime = null,slutt : DateTime = null) : List[Purchase] = {
+                            start : DateTime = null,slutt : DateTime = null) : Page[Purchase] = {
     val result = expTypeId match {
       case Some(et) => purchases.filter(purchase => purchase.expenseDetail.get.expenseType.get._id == expTypeId.get )
       case None => purchases
     }
-    result
+    
+    val sum = purchases.foldLeft(0.0)((tempSum, p) => p.amount + tempSum)
+    val totalRows = result.length
+    val offset = pageSize * page
+    val splittedResult = result.splitAt(offset)._2.take(pageSize)
+    Page(splittedResult, page, offset, totalRows, sum.toLong)
   }
   
   override def getFirstDate = new DateTime(purchases.minBy(_.bookedDate).bookedDate)

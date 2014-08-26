@@ -18,7 +18,6 @@ POST    /expenseDetails/edit/:expTypeId       controllers.ExpenseDetailsControll
 
 
 GET     /purchases/list                       controllers.PurchaseController.list(page:Int ?= 0, expType: Option[String] ?= None, expDet: String ?= "", start ?= "", stop ?= "")
-GET     /purchases/filter                     controllers.PurchaseController.filter
 POST    /purchases/edit/:pId                controllers.PurchaseController.edit(pId : String)
 GET     /purchases/edit/:pId                controllers.PurchaseController.edit(pId : String)
 DELETE     /purchases/delete/:pId                controllers.PurchaseController.delete(pId : String)

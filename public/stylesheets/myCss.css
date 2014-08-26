@@ -27,6 +27,14 @@ html, body {
   height: 100%;
   width: 100%;
 }
+
+#content1 {
+  min-height: 100%;
+  position: relative;
+  padding-left: 10px;   
+  display: inline-flex;
+  width: 100%;
+}
 #content {
   /*background: url("http://mammothmedia.tv/admin/wp-content/themes/mame/assets/img/menu-bg.png") repeat scroll 0 0 rgba(0, 0, 0, 0);*/
   background: #A4A4A4;
