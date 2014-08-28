@@ -22,8 +22,23 @@ object PurchaseController extends Controller {
       case Some(et) => Some(new ObjectId(et))
       case None => None
     }
+
+    println(expDetId)
+
     val purchases = db.getPurchases(page, 10, 1, exTypeObjectId, expDetId, convertToDate(start), convertToDate(slutt))    
-    val expDets = db.getExpenseDetails.map{ ed => Json.toJson(ed) }    
+    val expDets = db.getExpenseDetails.filter(ed => {
+      exTypeObjectId match {
+        case Some(etId) => {            
+          ed.expenseType match {
+            case Some(et) => {
+              et._id == etId
+            }
+            case None => true
+          }
+        }
+        case None => true
+      }
+      }).map{ ed => Json.toJson(ed) }    
     //val result = Map("purchasesList" -> purchases.map{ purchase => Json.toJson(purchase)}, "expDetList" -> expDets, "expTypesList" -> expTypes)
 
     val purchasesAsJson = Json.toJson(purchases)

@@ -45,6 +45,10 @@ purchasesControllers.controller("PurchaseController", function($scope,
 			});
 		}
 	};
+
+	$scope.resetDetails = function(){
+		$scope.filterFields.expDet = "";
+	}
 	$scope.filter = function(filterFields){
 		$scope.filterFields = filterFields;
 		populatePurchaseData($scope, $http, $routeParams);

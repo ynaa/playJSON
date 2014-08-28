@@ -10,7 +10,7 @@
 	        <dd>Utgiftsttype</dd>
 	        <dt>
 		        <select name="expType" ng-model="filterFields.expType" 
-		        ng-change="filter(filterFields)" ng-options="expType._id as expType.typeName for expType in expenseTypes">
+		        ng-change="resetDetails();filter(filterFields)" ng-options="expType._id as expType.typeName for expType in expenseTypes">
 		          <option value="">-- Velg utgiftsttype --</option>
 		        </select>
 	        </dt>
@@ -19,9 +19,10 @@
         <div class="FilterCell">
         <dl>
 	        <dd>Utgiftsdetalj</dd>
-	        <dt>
+	        <dt>            
 	          <select name="expDet" ng-model="filterFields.expDet" ng-change="filter(filterFields)" ng-options="expDet._id as expDet.description for expDet in expenseDetails">
-	            <option value="">-- Velg utgiftstdetalj --</option>
+              <option value="">-- Velg utgiftstdetalj --</option>              
+              <option value="-2">-- Ingen --</option>
 	          </select>
 	        </dt>
 	      </dl>
