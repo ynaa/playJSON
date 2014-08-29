@@ -18,7 +18,7 @@ object ExpenseTypesController extends Controller {
     val expTypes = db.getExpenseTypes
     val map = expTypes.map{ et => Json.toJson(et)}
 
-    Ok(Json.toJson(Json.obj("expDetList" -> map)))
+    Ok(Json.toJson(Json.obj("expTypesList" -> map)))
   }
 
   def edit(expTypeId : String) = Action { request =>

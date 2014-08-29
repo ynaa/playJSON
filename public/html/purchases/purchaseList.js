@@ -64,7 +64,7 @@ purchasesControllers.controller("PurchaseController", function($scope,
 function populatePurchaseData($scope, $http, $routeParams) {
 	
 	$http.get('/expenseTypes/list').success(function(data, status, headers, config) {
-		$scope.expenseTypes = data.expDetList;
+		$scope.expenseTypes = data.expTypesList;
 		populateFormDataFromParams($scope, $routeParams);
 	
 		var page = 0;		

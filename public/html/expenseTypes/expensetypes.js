@@ -57,6 +57,6 @@ expTypeControllers.controller("EditExpenseTypeController", function($scope, $htt
 
 function populateExpenseTypes($scope, $http) {
 	$http.get('/expenseTypes/list').success(function(data, status, headers, config) {
-		$scope.expenseTypes = data.expDetList;
+		$scope.expenseTypes = data.expTypesList;
 	});
 }
