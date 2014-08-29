@@ -85,7 +85,8 @@ function populatePurchaseData($scope, $http, $routeParams) {
 			url += "&stop=" + $scope.filterFields.end;
 		}
 		$http.get(url).success(function(data, status, headers, config) {
-			$scope.expenseDetails = data.expDetList;
+			$scope.expenseDetails = addDefaultOption(data.expDetList);
+			
 			$scope.purchasesList = data.purchasesList.items;
 			$scope.purchaseSum = data.purchasesList.totalSum;
 			$scope.pagination.page = data.purchasesList.page;
@@ -189,3 +190,10 @@ function calculatePageNumber(i, currentPage, paginationRange, totalPages) {
         return i;
     }
 } 
+function addDefaultOption(list){
+	var item = {};
+	item._id ="-2"
+	item.description = "-- Ingen --";
+    list.unshift(item);
+    return list;
+}
