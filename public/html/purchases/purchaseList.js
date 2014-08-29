@@ -97,9 +97,9 @@ function populatePurchaseData($scope, $http, $routeParams) {
 			$scope.pagination.totalSize = data.purchasesList.total;
 			$scope.pagination.totalSum = data.purchasesList.totalSum;		
 			$scope.pagination.current = data.purchasesList.page;	
-			$scope.pagination.numPages = Math.ceil(data.purchasesList.total / 10);
+			$scope.pagination.numPages = Math.ceil(data.purchasesList.total / 30);
 
-			$scope.pagination.pages = generatePagesArray($scope.pagination.current, $scope.pagination.totalSize, 10, 9);
+			$scope.pagination.pages = generatePagesArray($scope.pagination.current, $scope.pagination.totalSize, 30, 9);
 		});
 	});
 	
