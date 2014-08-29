@@ -12,7 +12,7 @@ purchasesControllers.controller("PurchaseController", function($scope,
 	$scope.filterFields = {};
 	$scope.pagination = {};			
 	populatePurchaseData($scope, $http, $routeParams, {});
-	$scope.edited = function(index) {
+	$scope.edited = function(index, field) {
 		var purchase = $scope.purchasesList[index];
 		if(purchase.amount) {
 			purchase.amount = parseFloat(purchase.amount);
@@ -21,18 +21,16 @@ purchasesControllers.controller("PurchaseController", function($scope,
 			purchase.amount = 0;
 		}
 		purchase.account = populateEmpty(purchase.account);
-		purchase.archiveref = populateEmpty(purchase.archiveref);
-		console.log(purchase.textcode);
-		var tcode = populateEmpty(purchase.textcode);
-		console.log(tcode);
+		purchase.archiveref = populateEmpty(purchase.archiveref);				
 		purchase.textcode = populateEmpty(purchase.textcode);
-		$scope.purchasesList[index] = purchase
-
-		console.log($scope.purchasesList[index]);
+		$scope.purchasesList[index] = purchase;
 		$http.post("/purchases/edit/" + $scope.purchasesList[index]._id,
 				$scope.purchasesList[index], {})
 		.success(function(data, stat, heads, cnfg) {
 			$scope.purchaseSum = calculateSum($scope); 
+			if(field === 'detail') {
+				populatePurchaseData($scope, $http, $routeParams);
+			}
 		})
 		.error(function(data, stat, heads, cnfg) {
 			alert("Editering feilet!");

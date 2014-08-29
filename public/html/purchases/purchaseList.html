@@ -70,10 +70,10 @@
         {{ purchasesList[$index].bookedDate | date:'dd.MM.yyyy' }}
       </div>
       <div class="Cell">
-        <input name="amount" ng-model="purchasesList[$index].amount" ng-change="edited($index)">
+        <input name="amount" ng-model="purchasesList[$index].amount" ng-change="edited($index, 'amount')">
       </div>
       <div class="Cell">
-        <select name="expDet" ng-model="purchasesList[$index].expenseDetail" ng-change="edited($index)" ng-options="expDet as expDet.description for expDet in expenseDetails track by expDet._id" >
+        <select name="expDet" ng-model="purchasesList[$index].expenseDetail" ng-change="edited($index, 'detail')" ng-options="expDet as expDet.description for expDet in expenseDetails track by expDet._id" >
         </select>
       </div>
       <div class="Cell">
