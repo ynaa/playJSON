@@ -22,8 +22,13 @@ purchasesControllers.controller("PurchaseController", function($scope,
 		}
 		purchase.account = populateEmpty(purchase.account);
 		purchase.archiveref = populateEmpty(purchase.archiveref);
+		console.log(purchase.textcode);
+		var tcode = populateEmpty(purchase.textcode);
+		console.log(tcode);
 		purchase.textcode = populateEmpty(purchase.textcode);
 		$scope.purchasesList[index] = purchase
+
+		console.log($scope.purchasesList[index]);
 		$http.post("/purchases/edit/" + $scope.purchasesList[index]._id,
 				$scope.purchasesList[index], {})
 		.success(function(data, stat, heads, cnfg) {
@@ -113,7 +118,10 @@ function calculateSum($scope){
 	return sum;
 }
 function populateEmpty(field){
-	if(!field){ return ""; }
+	if(!field){ 
+		return ""; 
+	}
+	return field;
 }
 function populateFormDataFromParams($scope, $routeParams){
 	
