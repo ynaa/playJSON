@@ -22,9 +22,6 @@ object PurchaseController extends Controller {
       case Some(et) => Some(new ObjectId(et))
       case None => None
     }
-
-    println(expDetId)
-
     val purchases = db.getPurchases(page, 10, 1, exTypeObjectId, expDetId, convertToDate(start), convertToDate(slutt))    
     val expDets = db.getExpenseDetails.filter(ed => {
       exTypeObjectId match {
