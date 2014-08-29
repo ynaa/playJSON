@@ -122,19 +122,19 @@ function populateEmpty(field){
 	return field;
 }
 function populateFormDataFromParams($scope, $routeParams){
-	
 	var et = $routeParams.expType;
-	var start = $routeParams.start;
-	var end = $routeParams.stop;
 	for(var i = 0; i < $scope.expenseTypes.length; i++){
 		if($scope.expenseTypes[i]._id == et) {
 			$scope.filterFields.expType = $scope.expenseTypes[i]._id;
 			break;
 		}
 	}
-	
-	$scope.filterFields.start = createDate(start);
-	$scope.filterFields.end = createDate(end);
+	if($routeParams.start){
+		$scope.filterFields.start = createDate($routeParams.start);
+	}
+	if($routeParams.end){
+		$scope.filterFields.end = createDate($routeParams.end);
+	}
 }
 
 function createDate(dateAsLong) {
