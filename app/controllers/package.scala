@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat
 import org.joda.time._
 import ynaa.jsontest.domain._
 
+import com.typesafe.config._
+
+
 package object controllers {
   
   val convertToDate = (dateString : String) => {
@@ -80,4 +83,10 @@ package object controllers {
   def getNameOfInterval(int : Interval) = {
     int.getStart.year.getAsText + " - " + int.getStart.monthOfYear.getAsText
   }
+
+
+  lazy val config = ConfigFactory.load("myEconomyApp")
+
+  def read(configKey: String) = config.getString(configKey)
+
 }
