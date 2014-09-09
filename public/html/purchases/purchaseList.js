@@ -84,7 +84,7 @@ function populatePurchaseData($scope, $http, $routeParams) {
 		if($scope.filterFields.start) {
 			url += "&start=" + $scope.filterFields.start;
 		}
-		if($scope.filterFields.end) {
+		if($scope.filterFields.end) {            
 			url += "&stop=" + $scope.filterFields.end;
 		}
 		$http.get(url).success(function(data, status, headers, config) {
@@ -132,8 +132,8 @@ function populateFormDataFromParams($scope, $routeParams){
 	if($routeParams.start){
 		$scope.filterFields.start = createDate($routeParams.start);
 	}
-	if($routeParams.end){
-		$scope.filterFields.end = createDate($routeParams.end);
+	if($routeParams.slutt){
+		$scope.filterFields.end = createDate($routeParams.slutt);
 	}
 }
 

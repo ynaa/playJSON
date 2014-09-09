@@ -53,11 +53,13 @@ function pad(num, size) {
 }
 
 function populateOverviewData($scope, $http, $routeParams) {
+	/*
 	var url = '/overview';
 	$http.get(url).success(function(data, status, headers, config) {
 		$scope.snittene = data.result.snittene;
 		$scope.alle = data.result.itervalExpPurchaseList;
 	});
+*/
 	populateExpenseTypes($scope, $http);
 	createIntervals($scope, $http);
 }

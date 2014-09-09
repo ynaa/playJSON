@@ -19,7 +19,15 @@ package object controllers {
 
   def firstDateOfYear(year : Int) = new DateTime(year, 1, 1, 0, 0)
 
-  def lastDateOfYear(year : Int) = new DateTime(year, 12, 31, 0, 0)
+  def lastDateOfYear(year : Int) = {
+    val today = new DateTime()
+    if(year == today.getYear) {
+      new DateTime(year, today.getMonthOfYear + 1, 1, 0, 0).minusDays(1)
+    }
+    else {
+      new DateTime(year, 12, 31, 0, 0)
+    }
+  }
 
   def createDateTime(dateString: String) = {
     new DateTime(new BigDecimal(new java.math.BigDecimal(dateString)).toLong)

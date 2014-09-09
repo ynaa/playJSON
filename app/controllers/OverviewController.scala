@@ -11,7 +11,6 @@ import ynaa.jsontest.domain._
 import play.api.libs.json._
 import helpers.Writes._
 
-
 object OverviewController extends Controller {
 
   val db : MyEconomyDbApi = MongoDBSetup.dbApi
@@ -27,7 +26,7 @@ object OverviewController extends Controller {
       intervalFromStartOfMonthToStartOfNextMonth(firstDate, today)
 
     val antYears = today.getYear - firstDate.getYear
-    val yearIntervals = for (year <- 1 to antYears)
+    val yearIntervals = for (year <- 0 to antYears)
       yield intervalFromStartOfMonthToStartOfNextMonth(firstDateOfYear(today.getYear - year), lastDateOfYear(today.getYear - year))
 
     val result = Map("lastMonth" -> Json.toJson(lastMonthInterval),
@@ -38,48 +37,25 @@ object OverviewController extends Controller {
     Ok(Json.toJson(Json.obj("result" -> result)))
   }
 
-  def getByInterval(startDat : String, end : String) = Action { request =>
-    
+  def getByInterval(startDat : String, end : String) = Action { request =>    
     val startDate = createDateTime(startDat)
     val endDate = createDateTime(end)
     val interval = new Interval(startDate, endDate)
     val result = sumByExpenseType(db, interval, getNumberOfMontsInInterval(interval) > 1)
 
-    Ok(Json.toJson(Json.obj("result" -> result)))
-    
-  }
-
-  def show() = Action { request =>    
-    val purchases = db.getPurchases()
-
-    val firstPurchase = db.getFirstDate
-    val lastPurchase = db.getLastDate
-
-    val lastMonthInterval = intervalFromStartOfMonthToStartOfNextMonth(lastPurchase, lastPurchase)
-    val threeMonthsInterval = intervalFromStartOfMonthToStartOfNextMonth(lastPurchase.minusMonths(2), lastPurchase)
-    val allMonthsInterval = intervalFromStartOfMonthToStartOfNextMonth(firstPurchase, lastPurchase)
-    val snittIntervals = findSumByExpenseTypeForIntervals(lastMonthInterval :: threeMonthsInterval :: allMonthsInterval :: Nil, db, true)
-    val snittene = Map("Siden starten" -> snittIntervals(allMonthsInterval),
-      "3 siste måneder" -> snittIntervals(threeMonthsInterval),
-      "Siste måned" -> snittIntervals(lastMonthInterval))
-    val intervals = createIntervals(firstPurchase, new DateTime)
-    val itervalExpPurchaseList = findSumByExpenseTypeForIntervals(intervals.reverse, db)
-
-    val jsonResult = itervalExpPurchaseList.map(iep => (getNameOfInterval(iep._1) -> iep._2))
-
-    val result = Map("snittene" -> Json.toJson(snittene),
-      "itervalExpPurchaseList" -> Json.toJson(jsonResult),
-      "intervals" -> Json.toJson(intervals))
-
-    Ok(Json.toJson(Json.obj("result" -> result)))
+    Ok(Json.toJson(Json.obj("result" -> result)))    
   }
 
   def getYearInterval(year: Int) = Action {
+    val today = new DateTime()
+    val numOfMonths = year match {
+      case x if x == today.getYear => today.getMonthOfYear
+      case _ => 12
+    }
     val thisYearInterval =
-      for(month <- 1 to 12) yield intervalFromStartOfMonthToStartOfNextMonth(
+      for(month <- 1 to numOfMonths) yield intervalFromStartOfMonthToStartOfNextMonth(
         new DateTime(year, month, 1, 0, 0), new DateTime(year, month, 1, 0, 0))
 
     Ok(Json.toJson(Json.obj("result" -> Json.toJson(thisYearInterval))))
   }
-
 }
