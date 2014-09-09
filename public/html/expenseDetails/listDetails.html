@@ -14,6 +14,15 @@
   </form>
 </div>
 <div>
+  <div>
+    <h4>Filtrer på type</h4>
+    <div>
+    <select name="expType" ng-model="filterExpType" ng-options="expType._id as expType.typeName for expType in expenseTypes" ng-change="filter()">
+     <option value="">-- Filtrer utgiftsttype --</option>
+    </select>
+
+    </div>
+  </div>
   <h2>Liste med utgiftsdetaljer, {{datas.length}} type(r)</h2>
   <div class="Table">
     <div class="Heading">

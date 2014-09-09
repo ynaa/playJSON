@@ -10,13 +10,15 @@ var expDetControllers = angular
 expDetControllers.controller("ExpenseDetailsController", function($scope,
 		$http, $routeParams, $location) {
 	$scope.expenseTypes = {};
-	getExpenseDetails($scope, $http, $routeParams);
+	//$scope.filterExpType = {};
+	$scope.selectedExpDetId = $routeParams.expDetId;
+	getExpenseDetails($scope, $http, $scope.selectedExpDetId);
 	$scope.newExpDet = {};
 	$scope.add = function(newExpDet) {
 		var responsePromise = $http.post("/expenseDetails/add", newExpDet, {});
 		responsePromise.success(function(dataFromServer, status, headers,
 				config) {
-			getExpenseDetails($scope, $http, $routeParams);
+			getExpenseDetails($scope, $http, $scope.selectedExpDetId);
 			$scope.newExpDet.detName = "";
 			$scope.newExpDet.detTags = "";
 			$scope.newExpDet.expType = "";
@@ -25,6 +27,9 @@ expDetControllers.controller("ExpenseDetailsController", function($scope,
 			alert("Legge til feilet!");
 		});
 	};
+	$scope.filter = function(index) {		
+		getExpenseDetails($scope, $http, $scope.filterExpType);
+	}
 	$scope.edited = function(index) {
 		//tags
 		var temp = $scope.expDetList[index].searchTags;
@@ -52,11 +57,10 @@ expDetControllers.controller("ExpenseDetailsController", function($scope,
 	 };
 });
 
-function getExpenseDetails($scope, $http, $routeParams) {
-	$scope.selectedExpDetId = $routeParams.expDetId;
+function getExpenseDetails($scope, $http, selectedExpDetId) {	
 	var url = '/expenseDetails/list';
-	if ($scope.selectedExpDetId) {
-		url += '/' + $scope.selectedExpDetId
+	if (selectedExpDetId) {
+		url += '/' + selectedExpDetId
 	}
 	$http.get(url).success(function(data, status, headers, config) {
 		$scope.expDetList = data.result.expDetList;
