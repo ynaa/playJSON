@@ -10,10 +10,10 @@ import org.joda.time._
 import ynaa.jsontest.domain._
 import play.api.libs.json._
 import helpers.Writes._
+import com.google.inject._
 
-object OverviewController extends Controller {
-
-  val db : MyEconomyDbApi = MongoDBSetup.dbApi
+@Singleton
+class OverviewController @Inject()(db: MyEconomyDbApi)  extends Controller {
 
   def getIntervals = Action {
     val today = new DateTime

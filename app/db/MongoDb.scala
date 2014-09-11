@@ -2,11 +2,25 @@ package db
 
 import org.joda.time.Interval
 import java.util.Date
+import play.Play
+
 import com.mongodb.casbah.Imports._
 import org.joda.time.DateTime
 import ynaa.jsontest.domain._
 
+import com.google.inject._
+
+@Singleton
 class MongoDb extends MyEconomyDbApi {
+
+  val dbName = Play.application().configuration().getString("mongodb.default.db")
+  val mongoURI = Play.application().configuration().getString("mongodb.uri")
+  val uri = MongoClientURI(mongoURI)
+  val mDb = MongoClient(uri)
+  val mongoDB = mDb(dbName)
+
+  val mongoDB1 = MongoClient()(dbName)
+
 
   override def getExpenseType(expTypeId : ObjectId) = {
     ExpenseType.getExpenseType(expTypeId)
@@ -79,9 +93,9 @@ class MongoDb extends MyEconomyDbApi {
   override def getPurchasesByExpenseTypeAndDate(expType : ExpenseType, ObjectIderval : Interval) : List[Purchase] = {
     Purchase.getPurchasesByExpenseTypeAndDate(expType : ExpenseType, ObjectIderval)
   }
-  
+
   override def getPurhcaseByExpDetId(expDetId : Option[ObjectId]) = Purchase.getPurhcaseByExpDetId(expDetId)
-  
+
   override def getFirstDate = new DateTime(Purchase.getFirstDate)
   override def getLastDate = new DateTime(Purchase.getLastDate)
 }

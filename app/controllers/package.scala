@@ -6,10 +6,11 @@ import org.joda.time._
 import ynaa.jsontest.domain._
 
 import com.typesafe.config._
+import com.github.kxbmap.configs._
 
 
 package object controllers {
-  
+
   val convertToDate = (dateString : String) => {
     if (dateString == "") {
       null
@@ -35,7 +36,7 @@ package object controllers {
   def createDateTime(dateString: String) = {
     new DateTime(new BigDecimal(new java.math.BigDecimal(dateString)).toLong)
   }
-  
+
   def findSumByExpenseTypeForIntervals(intervals : List[Interval], dben : MyEconomyDbApi, snitt : Boolean = false) = {
     Map(intervals.map(
       int => (int ->
@@ -87,6 +88,7 @@ package object controllers {
 
   lazy val config = ConfigFactory.load("myEconomyApp")
 
-  def read(configKey: String) = config.getString(configKey)
+  def read(configKey: String) = config.get[String](configKey)
 
+  def readAsList(configKey: String): List[String] = config.get[List[String]](configKey)
 }

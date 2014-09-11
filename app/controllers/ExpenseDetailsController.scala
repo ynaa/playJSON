@@ -9,9 +9,12 @@ import play.api.libs.json.JsString
 import ynaa.jsontest.domain._
 import com.mongodb.casbah.Imports._
 
-object ExpenseDetailsController extends Controller {
+import com.google.inject._
 
-  val db: MyEconomyDbApi = MongoDBSetup.dbApi
+@Singleton
+class  ExpenseDetailsController @Inject()(db: MyEconomyDbApi) extends Controller {
+
+  //val db: MyEconomyDbApi = MongoDBSetup.dbApi
 
   def list(expTypeId : String = null, page : Int = 0) = Action {
     val expenseDetails = expTypeId match {
@@ -44,13 +47,13 @@ object ExpenseDetailsController extends Controller {
             Ok("Ok")
           }
           case e : JsError => {
-            println("jsError: " + e)
+            Logger.error("jsError: " + e)
             InternalServerError("Oops");
           }
         }
       }
       case None => {
-        println("Fant ikke")
+        Logger.error("Fant ikke")
         InternalServerError("Oops");
       }
     }
@@ -60,7 +63,7 @@ object ExpenseDetailsController extends Controller {
     db.deleteExpenseDetail(new ObjectId(expDetId))
     Ok("Ok")
   }
-  
+
   private def getRequestParameter(request : Request[AnyContent], paramName : String) : String = {
     val paramVal = request.body.asJson.get \ paramName
     paramVal match {

@@ -5,28 +5,28 @@
 # Home page
 GET     /                           controllers.Application.index
 
-GET     /expenseTypes/list                    controllers.ExpenseTypesController.list
-POST    /expenseTypes/add                     controllers.ExpenseTypesController.add
-DELETE  /expenseTypes/delete/:expTypeId       controllers.ExpenseTypesController.delete(expTypeId : String)
-POST    /expenseTypes/edit/:expTypeId        controllers.ExpenseTypesController.edit(expTypeId : String)
+GET     /expenseTypes/list                    @controllers.ExpenseTypesController.list
+POST    /expenseTypes/add                     @controllers.ExpenseTypesController.add
+DELETE  /expenseTypes/delete/:expTypeId       @controllers.ExpenseTypesController.delete(expTypeId : String)
+POST    /expenseTypes/edit/:expTypeId        @controllers.ExpenseTypesController.edit(expTypeId : String)
 
-GET     /expenseDetails/list                  controllers.ExpenseDetailsController.list(expTypeId : String ?= null, p:Int ?= 0)
-GET     /expenseDetails/list/:expTypeId       controllers.ExpenseDetailsController.list(expTypeId : String, p: Int ?= 0)
-DELETE     /expenseDetails/delete/:expTypeId     controllers.ExpenseDetailsController.delete(expTypeId : String)
-POST    /expenseDetails/add                   controllers.ExpenseDetailsController.add
-POST    /expenseDetails/edit/:expTypeId       controllers.ExpenseDetailsController.edit(expTypeId : String)
+GET     /expenseDetails/list                  @controllers.ExpenseDetailsController.list(expTypeId : String ?= null, p:Int ?= 0)
+GET     /expenseDetails/list/:expTypeId       @controllers.ExpenseDetailsController.list(expTypeId : String, p: Int ?= 0)
+DELETE     /expenseDetails/delete/:expTypeId  @controllers.ExpenseDetailsController.delete(expTypeId : String)
+POST    /expenseDetails/add                   @controllers.ExpenseDetailsController.add
+POST    /expenseDetails/edit/:expTypeId       @controllers.ExpenseDetailsController.edit(expTypeId : String)
 
-GET     /purchases/list                       controllers.PurchaseController.list(page:Int ?= 0, expType: Option[String] ?= None, expDet: String ?= "", start ?= "", stop ?= "")
-POST    /purchases/edit/:pId                controllers.PurchaseController.edit(pId : String)
-GET     /purchases/edit/:pId                controllers.PurchaseController.edit(pId : String)
-DELETE     /purchases/delete/:pId                controllers.PurchaseController.delete(pId : String)
+GET     /purchases/list                       @controllers.PurchaseController.list(page:Int ?= 0, expType: Option[String] ?= None, expDet: String ?= "", start ?= "", stop ?= "")
+POST    /purchases/edit/:pId                @controllers.PurchaseController.edit(pId : String)
+GET     /purchases/edit/:pId                @controllers.PurchaseController.edit(pId : String)
+DELETE     /purchases/delete/:pId                @controllers.PurchaseController.delete(pId : String)
 
-GET     /interval                             controllers.OverviewController.getByInterval(start: String, end: String)
-GET     /intervals                            controllers.OverviewController.getIntervals
-GET     /yearinterval/:year                   controllers.OverviewController.getYearInterval(year: Int)
+GET     /interval                             @controllers.OverviewController.getByInterval(start: String, end: String)
+GET     /intervals                            @controllers.OverviewController.getIntervals
+GET     /yearinterval/:year                   @controllers.OverviewController.getYearInterval(year: Int)
 
-POST    /fileupload                           controllers.FileUploadController.upload
-GET     /update                               controllers.FileUploadController.update
+POST    /fileupload                           @controllers.FileUploadController.upload
+GET     /update                               @controllers.FileUploadController.update
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

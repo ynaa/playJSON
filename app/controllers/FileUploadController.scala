@@ -13,10 +13,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.text.DateFormat
 import org.bson.types.ObjectId
+import com.google.inject._
+import scala.util.matching.Regex
 
-object FileUploadController extends Controller {
-
-  val db : MyEconomyDbApi = MongoDBSetup.dbApi
+@Singleton
+class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
 
   def update = Action {
     val expenseDetails = db.getExpenseDetails
@@ -55,12 +56,6 @@ object FileUploadController extends Controller {
     }
   }
 
-  private def readRequestMap(request : Request[AnyContent]) = {
-    val requestMap : collection.mutable.Map[String, Seq[String]] = collection.mutable.Map()
-    requestMap ++= request.body.asFormUrlEncoded.getOrElse[Map[String, Seq[String]]] { Map.empty }
-    requestMap ++= request.queryString
-  }
-
   private def convertToString(string : Option[Seq[String]]) = {
     string match {
       case Some(s) => s.foldLeft("")((tempString, str) => tempString + str).trim
@@ -68,9 +63,13 @@ object FileUploadController extends Controller {
     }
   }
 
-  private def filterLine(line : String) = {
+  def lineContainsWordInList(line: String, wordList: List[String]) = {
+    !wordList.filter(word => line.toUpperCase.contains(word.toUpperCase)).isEmpty
+  }
+
+  def filterLine(line : String) = {
     val linje = line.replaceAll("\"", "")
-    if (linje.contains("INNGÅENDE SALDO")) {
+    if (lineContainsWordInList(linje, readAsList("exluded-lines"))) {
       Nil
     } else if (!(linje.length == 0 || linje.startsWith("BOKFØRINGSDATO") ||
       linje.startsWith("Bok") || linje.startsWith("Bokført") ||
@@ -83,7 +82,6 @@ object FileUploadController extends Controller {
 
   def createPurchases(fileAsList : List[String], bank : String) = {
     val expenseDetails = db.getExpenseDetails
-    val details = expenseDetails.map(exp => exp.description)
     val purchases = fileAsList.map(aLine => {
       val lineItems = stringSplit(aLine)
       val purchase = createPurchase(lineItems, bank)
@@ -101,6 +99,7 @@ object FileUploadController extends Controller {
     Purchase(purchase._id, purchase.bookedDate, purchase.interestDate, purchase.textcode, purchase.description,
       purchase.amount, purchase.archiveref, purchase.account, expDet)
   }
+
   def stringSplit(str : String) : List[String] = {
     val li : List[String] = str.split("\t").toList
     li.map { x => x.trim }
@@ -121,39 +120,25 @@ object FileUploadController extends Controller {
   }
 
   def matchExpDetailText(purchaseText : String, expenseDetails : List[ExpenseDetail]) : Option[ExpenseDetail] = {
+    val result =
+      for(expDet <- expenseDetails;
+        tag <- expDet.searchTags;
+        if(checkIfStringContainsWholeWord(purchaseText, tag.toUpperCase))
+      ) yield Some(expDet)
 
-    for (expDet <- expenseDetails) {
-      val searchTags = expDet.searchTags
-      for (tag <- searchTags) {
-        val besk = tag.toUpperCase
-        val result = checkIfStringContainsWholeWord(purchaseText, besk)
-        if (result) {
-          return Some(expDet)
-        }
-      }
+    result match {
+      case head :: tail => head
+      case _ => None
     }
-    None
   }
 
   def checkIfStringContainsWholeWord(string : String, word : String) : Boolean = {
-    val str = string.toUpperCase
-    val wrd = word.trim.toUpperCase
-    if (str.equals(wrd)) {
-      true
-    } else if (str.contains(wrd)) {
-      val indexBefore = str.indexOf(wrd)
-      val indexAfter = indexBefore + wrd.length
-      val lenght = str.length
-      val correctBefore = (indexBefore == 0) || (indexBefore >= 0 && correctEndChar(str.charAt(indexBefore - 1)))
-      val correctAfter = correctBefore && ((indexAfter == str.length) || (indexAfter < str.length && correctEndChar(str.charAt(indexAfter))))
-      correctBefore && correctAfter
-    } else {
-      false
+    val pattern = ("""(\.|\s|,|^)?(""" + word.toUpperCase + """)(\.|\s|,)?""").r
+    val result = pattern findFirstIn string.toUpperCase
+    result match {
+      case None => false
+      case _ => true
     }
-  }
-
-  def correctEndChar(char : Char) = {
-    char == ' ' || char == '.' || char == ','
   }
 
   def createSPV(list : List[String], formatter : DateFormat) : Purchase = {
@@ -175,42 +160,32 @@ object FileUploadController extends Controller {
     val text = ""
     Purchase(ObjectId.get, booked, interest, text, desc, amount, "", "", None)
   }
+
   def createSkandia(list : List[String], formatter : DateFormat) : Purchase = {
     val booked : Date = formatter.parse(list(0))
     val interest : Date = formatter.parse(list(1))
-    var ammount = list(5)
-    if (ammount == null || ammount == "") {
-      ammount = list(6)
-    } else {
-      ammount = "-" + list(5)
+    val ammount = list(5) match {
+      case amnt if amnt != null && amnt != "" => "-" + amnt
+      case _ => list(6)
     }
-    val amount = createDecimal(ammount)
     val desc = list(4)
     val text = list(3)
-    Purchase(ObjectId.get, booked, interest, text, desc, amount, "", "", None)
+    Purchase(ObjectId.get, booked, interest, text, desc, createDecimal(ammount), "", "", None)
   }
 
   def createVisakreditt(list : List[String], formatter : DateFormat) : Purchase = {
     val booked : Date = formatter.parse(list(0))
-
-    val intDateString = list(1)
-    var interest : Date = null
-    if (intDateString == null || intDateString == "") {
-      interest = booked
-    } else {
-      interest = formatter.parse(intDateString)
+    val interest = list(1) match {
+      case intDate if intDate != null && intDate != "" => formatter.parse(intDate)
+      case _ => booked
     }
-
-    var ammount = list(3)
-    if (ammount == null || ammount == "") {
-      ammount = list(4)
-    } else {
-      ammount = "-" + list(3)
+    val ammount = list(3) match {
+      case amnt if amnt != null && amnt != "" => "-" + amnt
+      case _ => list(4)
     }
-    val amount = createDecimal(ammount)
     val desc = list(2)
     val text = ""
-    Purchase(ObjectId.get, booked, interest, text, desc, amount, "", "", None)
+    Purchase(ObjectId.get, booked, interest, text, desc, createDecimal(ammount), "", "", None)
   }
 
   def createDecimal(amount : String) : Int = {

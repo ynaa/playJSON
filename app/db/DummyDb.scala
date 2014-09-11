@@ -6,28 +6,35 @@ import java.util.Calendar
 import org.joda.time.Interval
 import org.joda.time.DateTime
 
-object DummyDb extends MyEconomyDbApi {
+import com.google.inject._
+
+@Singleton
+class DummyDb extends MyEconomyDbApi {
+
   var expenseTypes : List[ExpenseType] = Nil
 
   var expenseDetails : List[ExpenseDetail] = Nil
 
   var purchases : List[Purchase] = Nil
 
+  initData
+
   def initData {
+    println("initData")
     expenseTypes = createExpenseType("Type 1") ::
       createExpenseType("Type 2") ::
       createExpenseType("Type 3") ::
       createExpenseType("Type 4") ::
       Nil
-      
+
     expenseDetails = createExpenseDetail("Detail 1", List("tag11", "tag12"), Some(expenseTypes(0))) ::
       createExpenseDetail("Detail 2", List("tag21", "tag22"), Some(expenseTypes(1))) ::
       createExpenseDetail("Detail 3", List("tag31", "tag32"), Some(expenseTypes(2))) ::
       createExpenseDetail("Detail 4", List("tag41", "tag42"), Some(expenseTypes(3))) ::
       Nil
-      
+
       val date = new DateTime().monthOfYear.get - 1
-      
+
       purchases = createPurchase(1, createDate(2012, date - 1, 1), "Purchase 1", 123.5, Some(expenseDetails(0))) ::
       createPurchase(2, createDate(2012, date - 1, 1), "Purchase 2", 223.5, Some(expenseDetails(1))) ::
       createPurchase(3, createDate(2013, date - 1, 1), "Purchase 3", 323.5, Some(expenseDetails(2))) ::
@@ -45,7 +52,7 @@ object DummyDb extends MyEconomyDbApi {
       createPurchase(15, createDate(2014, date - 4, 1), "Purchase 15", 323.5, Some(expenseDetails(2))) ::
       createPurchase(16, createDate(2014, date - 4, 1), "Purchase 16", 123.5, Some(expenseDetails(3))) ::
       Nil
-      
+
       /*
       val date = new DateTime().monthOfYear.get - 1
       purchases = createPurchase(1, createDate(2012, date - 1, 1), "Purchase 1", 123.5, Some(expenseDetails(0))) ::
@@ -105,7 +112,7 @@ object DummyDb extends MyEconomyDbApi {
   override def deleteExpenseDetail(expDetId : ObjectId) = {
     expenseDetails = expenseDetails.filterNot(e => e._id == expDetId)
   }
-  
+
   override def getExpenseDetail(expDetId : ObjectId) = {
     expenseDetails.find(ed => ed._id == expDetId)
   }
@@ -127,13 +134,13 @@ object DummyDb extends MyEconomyDbApi {
     searchTags : List[String], expenseType : Option[ExpenseType]) = {
     ExpenseDetail(new ObjectId(), description, searchTags, expenseType)
   }
-  
+
  private def isInInterval(interval : Interval, date : Date) = {
 
     val jodaDate = new DateTime(date).withTimeAtStartOfDay
     val result = interval.contains(jodaDate)
     result
-  } 
+  }
 //  override def getPurchases : List[Purchase] = {
 //    purchases
 //  }
@@ -155,26 +162,26 @@ object DummyDb extends MyEconomyDbApi {
   override def addPurchase(newPurchase : Purchase) {
     purchases = newPurchase :: purchases
   }
-  
-  override def getPurchases(page : Int = 0, pageSize : Int = 10, orderBy : Int = 1, 
+
+  override def getPurchases(page : Int = 0, pageSize : Int = 10, orderBy : Int = 1,
                             expTypeId : Option[ObjectId] = None,expDetId : String = "",
                             start : DateTime = null,slutt : DateTime = null) : Page[Purchase] = {
     val result = expTypeId match {
       case Some(et) => purchases.filter(purchase => purchase.expenseDetail.get.expenseType.get._id == expTypeId.get )
       case None => purchases
     }
-    
+
     val sum = purchases.foldLeft(0.0)((tempSum, p) => p.amount + tempSum)
     val totalRows = result.length
     val offset = pageSize * page
     val splittedResult = result.splitAt(offset)._2.take(pageSize)
     Page(splittedResult, page, offset, totalRows, sum.toLong)
   }
-  
+
   override def getFirstDate = new DateTime(purchases.minBy(_.bookedDate).bookedDate)
-  
+
   override def getLastDate = new DateTime(purchases.maxBy(_.bookedDate).bookedDate)
-  
+
   override def getPurchasesByExpenseTypeAndDate(expType : ExpenseType, interval : Interval) : List[Purchase] = {
     val p = purchases.filter(p =>
       p.expenseDetail match {
@@ -188,11 +195,11 @@ object DummyDb extends MyEconomyDbApi {
       })
       p
   }
-  
+
   override def getPurhcaseByExpDetId(expDetId : Option[ObjectId]) = {
     expDetId match {
       case Some(id) => {
-        purchases.filter(p => 
+        purchases.filter(p =>
           p.expenseDetail match {
             case Some(ed) => ed._id == id
             case None => false
@@ -201,7 +208,7 @@ object DummyDb extends MyEconomyDbApi {
       case None => purchases
     }
   }
-  
+
   private def createPurchase(num: Int, bookedDate : Date, description : String,
     amount : Double, expenseDetail : Option[ExpenseDetail]) = {
     Purchase(new ObjectId(), bookedDate, bookedDate, null, description, amount, null, null, expenseDetail)

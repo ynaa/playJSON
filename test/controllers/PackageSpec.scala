@@ -43,7 +43,7 @@ class PackageSpec extends Specification {
 			
 		}
 		"get sums from empty db" in {
-			val db = DummyDb
+			val db = new DummyDb
 			db.purchases = Nil
 			db.expenseTypes = Nil
 			db.expenseDetails = Nil

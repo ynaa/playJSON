@@ -9,11 +9,11 @@ import ynaa.jsontest.domain.ExpenseType
 import com.mongodb.casbah.Imports._
 import helpers._
 import helpers.Writes._
+import com.google.inject._
 
-object ExpenseTypesController extends Controller {
+@Singleton
+class ExpenseTypesController @Inject()(db: MyEconomyDbApi)  extends Controller {
 
-  val db: MyEconomyDbApi = MongoDBSetup.dbApi
-  
   def list = Action {
     val expTypes = db.getExpenseTypes
     val map = expTypes.map{ et => Json.toJson(et)}
