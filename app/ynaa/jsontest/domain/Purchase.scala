@@ -98,6 +98,20 @@ object Purchase extends ModelCompanion[Purchase, ObjectId] {
   def addPurchase(newPurchase : Purchase) {
     Purchase.insert(newPurchase)
   }
+  
+  def exists(newPurchase: Purchase) = {
+     val query = MongoDBObject(
+      "bookedDate" -> newPurchase.bookedDate,
+      "interestDate" -> newPurchase.interestDate,
+      "textcode" -> newPurchase.textcode,
+      "description" -> newPurchase.description,
+      "amount" -> newPurchase.amount,
+      "archiveref" -> newPurchase.archiveref,
+      "account" -> newPurchase.account,
+      "expenseDetail" -> newPurchase.expenseDetail)
+    val result = find(query).toList
+    !result.isEmpty
+  }
 
   def getPurchasesByExpenseTypeAndDate(expType : ExpenseType, interval : Interval) : List[Purchase] = {
     val where = createWhere(Some(expType._id), "", interval.getStart, interval.getEnd)
