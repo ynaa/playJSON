@@ -51,7 +51,7 @@ object Purchase extends ModelCompanion[Purchase, ObjectId] {
   def getPurhcaseByExpDetId(expDetId: Option[ObjectId]) = {
     val where = createWhere(None, expDetId match {
       case Some(id) => id.toString
-      case None => ""
+      case None => "-2"
     }, null, null)
 
     find(where).toSeq
