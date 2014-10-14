@@ -16,13 +16,12 @@ import com.google.inject._
 @Singleton
 class PurchaseController @Inject()(db: MyEconomyDbApi)  extends Controller {
 
-  def list(page : Int = 0, expTypeId : Option[String] = None, expDetId : String = "", start : String = "", slutt : String = "") = Action {
-
+  def list(page : Int = 0, expTypeId : Option[String] = None, expDet : String = "", start : String = "", slutt : String = "") = Action {
     val exTypeObjectId = expTypeId match{
       case Some(et) => Some(new ObjectId(et))
       case None => None
     }
-    val purchases = db.getPurchases(page, 30, 1, exTypeObjectId, expDetId, convertToDate(start), convertToDate(slutt))
+    val purchases = db.getPurchases(page, 30, 1, exTypeObjectId, expDet, convertToDate(start), convertToDate(slutt))
     val expDets = db.getExpenseDetails.filter(ed => {
       exTypeObjectId match {
         case Some(etId) => {
@@ -36,7 +35,6 @@ class PurchaseController @Inject()(db: MyEconomyDbApi)  extends Controller {
         case None => true
       }
       }).map{ ed => Json.toJson(ed) }
-    //val result = Map("purchasesList" -> purchases.map{ purchase => Json.toJson(purchase)}, "expDetList" -> expDets, "expTypesList" -> expTypes)
 
     val purchasesAsJson = Json.toJson(purchases)
 

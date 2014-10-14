@@ -129,6 +129,9 @@ function populateFormDataFromParams($scope, $routeParams){
 			break;
 		}
 	}
+	if($routeParams.expDet){
+		$scope.filterFields.expDet = $routeParams.expDet;
+	} 
 	if($routeParams.start){
 		$scope.filterFields.start = createDate($routeParams.start);
 	}
