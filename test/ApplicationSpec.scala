@@ -12,6 +12,7 @@ import play.api.test.Helpers._
  */
 class ApplicationSpec /*extends Specification */{
 /*
+Ny test-endring
   "Application" should {
 
     "send 404 on a bad request" in {
