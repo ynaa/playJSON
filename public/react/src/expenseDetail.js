@@ -4,7 +4,7 @@ var ExpenseTypeHeader = React.createClass({
 }
 });
 
-var ExpenseType = React.createClass({
+var ExpenseDetail = React.createClass({
     onChange: function(){
         console.log("Changing");
     },
@@ -15,13 +15,16 @@ var ExpenseType = React.createClass({
         return (
             <div className="Row">
                 <div className="Cell">
-                    <input name="typeName" value={this.props.typeName} onChange={this.onChange} />
+                    <input name="detName1" value={this.props.expDet.description} />
                 </div>
-
-                <input type="hidden" name="id" value={this.props.id} />
-
                 <div className="Cell">
-                    <a href={"#/detlist/" + this.props.id} title="">Vis</a>
+                    <input name="detName1" value={this.props.expDet.searchTags} />
+                </div>
+                <div className="Cell">
+                    <input name="expType1" value={this.props.expDet.expenseType.typeName} />
+                </div>
+                <div className="Cell">
+                    <a href={"#/purchaselist/" + this.props.id} title="">Vis</a>
                 </div>
                 <div className="Cell">
                     <button onClick={this.onDelete} >Slett</button>
@@ -31,13 +34,13 @@ var ExpenseType = React.createClass({
     }
 });
 
-var ExpenseTypeWrapper = React.createClass({
-	loadExpenseTypesFromServer: function() {
+var ExpenseDetailWrapper = React.createClass({
+    loadExpenseTypesFromServer: function() {
         $.ajax({
             url: this.props.url,
             dataType: 'json',
             success: function(data) {
-                this.setState({data: data.expTypesList});
+                this.setState({data: data.result.expDetList});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(this.props.url, status, err.toString());
@@ -94,18 +97,21 @@ var ExpenseTypeWrapper = React.createClass({
         this.loadExpenseTypesFromServer();
     },
     render: function() {
-        return (
-            <div>
+        /*
                 <ExpenseTypeHeader/>
                 <ExpenseTypeForm onTypeSubmit={this.handleNewTypeSubmit} />
-                <ExpenseTypeList onTypeDelete={this.handleNewTypeDelete} data={this.state.data}/>
+        */
+        return (
+            <div>
+                <ExpenseDetailFilter />
+                <ExpenseDetailList onTypeDelete={this.handleNewTypeDelete} data={this.state.data}/>
             </div>
         );
     }
 });
 
 
-var ExpenseTypeForm = React.createClass({
+var ExpenseDetailForm = React.createClass({
     handleSubmit: function(e) {
         e.preventDefault();
         var typeName = this.refs.typeName.getDOMNode().value.trim();
@@ -124,26 +130,50 @@ var ExpenseTypeForm = React.createClass({
     }
 });
 
-var ExpenseTypeList = React.createClass({
+
+var ExpenseDetailFilter = React.createClass({
+    filter: function() {
+        console.log("Filter");
+    },
+    render: function() {
+        return (
+            <div>
+                <h4>Filtrer på type</h4>
+                <div>
+                    <select name="expType" ng-model="filterExpType"
+                    ng-options="expType._id as expType.typeName for expType in expenseTypes" ng-change={this.filter}>
+                        <option value="">-- Filtrer utgiftsttype --</option>
+                    </select>
+
+                </div>
+            </div>
+        );
+    }
+});
+
+var ExpenseDetailList = React.createClass({
     render: function() {
         var onDelete = this.props.onTypeDelete;
         var size = this.props.data.length;
-        var rows = this.props.data.map(function(expType, index) {
+        var rows = this.props.data.map(function(expDet, index) {
             return (
-                <ExpenseType onTypeDelete={onDelete} id={expType._id} typeName={expType.typeName} key={index} />
+                <ExpenseDetail expDet={expDet} key={index} />
             );
         });
         return (
             <div>
                 <h2>Liste med utgiftstyper, {size} type(r)</h2>
-                <div className="Table"></div>
-                <div className="Heading">
-                    <div className="Cell"><p>Utgiftsnavn</p></div>
-                    <div className="Cell"><p>Detaljer</p></div>
-                    <div className="Cell"><p>Slett</p></div>
-                </div>
-                <div className="commentList">
-                    {rows}
+                <div className="Table">
+                    <div className="Heading">
+                        <div className="Cell"><p>Beskrivelse</p></div>
+                        <div className="Cell"><p>Søkeord</p></div>
+                        <div className="Cell"><p>Type</p></div>
+                        <div className="Cell"><p>Vis utgifter</p></div>
+                        <div className="Cell"><p>Slett</p></div>
+                    </div>
+                    <div className="commentList">
+                        {rows}
+                    </div>
                 </div>
             </div>
         );
@@ -152,7 +182,7 @@ var ExpenseTypeList = React.createClass({
 
 React.render(
     <div>
-        <ExpenseTypeWrapper url="/expenseTypes/list" />
+        <ExpenseDetailWrapper url="/expenseDetails/list" />
     </div>,
     document.getElementById('content')
 );
