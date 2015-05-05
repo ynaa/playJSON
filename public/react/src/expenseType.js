@@ -21,7 +21,7 @@ var ExpenseType = React.createClass({
                 <input type="hidden" name="id" value={this.props.id} />
 
                 <div className="Cell">
-                    <a href={"#/detlist/" + this.props.id} title="">Vis</a>
+                    <a href={"#Details/" + this.props.id} title="">Vis</a>
                 </div>
                 <div className="Cell">
                     <button onClick={this.onDelete} >Slett</button>
@@ -149,10 +149,10 @@ var ExpenseTypeList = React.createClass({
         );
     }
 });
-
-React.render(
-    <div>
-        <ExpenseTypeWrapper url="/expenseTypes/list" />
-    </div>,
-    document.getElementById('content')
-);
+//
+//React.render(
+//    <div>
+//        <ExpenseTypeWrapper url="/expenseTypes/list" />
+//    </div>,
+//    document.getElementById('content')
+//);
