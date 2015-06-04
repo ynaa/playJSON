@@ -4,31 +4,6 @@ var ExpenseTypeHeader = React.createClass({
 }
 });
 
-var MyInput = React.createClass({
-	getInitialState: function() {
-	    return {
-	    	field: '',
-	    	name: ''
-		};
-	},
-	componentWillMount: function() {
-	    this.setState({
-	    	field: this.props.value,
-	    	name: this.props.name
-	    });
-	  },
-	onChange: function(event){
-		this.setState({field: event.target.value});
-	},
-	render: function() {
-    	var field = this.state.field;
-    	var name = this.state.name;
-        return (
-            <input name={name} value={field} onBlur={this.props.onBlur} onChange={this.onChange}/>
-        );
-    }
-});
-
 var ExpenseDetail = React.createClass({
     onBlur: function(cid){
     	var expDet = this.props.expDet;
@@ -43,23 +18,24 @@ var ExpenseDetail = React.createClass({
     		value = createJSONList(value);
     	}
     	expDet[cid.target.name] = value;
-        this.props.onDetailEdit(expDet);
+      this.props.onDetailEdit(expDet);
     },
     onDelete: function(){
-        this.props.onTypeDelete(this.props.expDet._id);
+        this.props.onDetailDelete(this.props.expDet._id);
     },
     render: function() {
-        return (
+      console.log("Rendering");
+      return (
         		<div className="Row">
                 <div className="Cell">
-                    <MyInput name="description" value={this.props.expDet.description} onBlur={this.onBlur}/>
+                    <MyInput key={this.props.expDet._id} name="description" value={this.props.expDet.description} onBlur={this.onBlur}/>
                 </div>
                 <div className="Cell">
-                	<MyInput name="searchTags" value={this.props.expDet.searchTags} onBlur={this.onBlur}/>
+                	<MyInput key={this.props.expDet._id} name="searchTags" value={this.props.expDet.searchTags} onBlur={this.onBlur}/>
                 </div>
                 <div className="Cell">
-                	{createSelect("expenseType", this.props.expTypeList, 
-                			this.props.expDet.expenseType._id, 
+                	{createSelect("expenseType", this.props.expTypeList,
+                			this.props.expDet.expenseType._id,
                 			this.onBlur, false)}
                 </div>
                 <div className="Cell">
@@ -77,8 +53,8 @@ var ExpenseDetail = React.createClass({
 //                    <input name="searchTags" value={searchTags}  onBlur={this.onBlur} onChange={this.onChange} />
 //                </div>
 //                <div className="Cell">
-//                	{createSelect("expenseType", this.props.expTypeList, 
-//                			expenseType._id, 
+//                	{createSelect("expenseType", this.props.expTypeList,
+//                			expenseType._id,
 //                			this.onBlur, false)}
 //                </div>
 //                <div className="Cell">
@@ -96,18 +72,23 @@ var ExpenseDetailWrapper = React.createClass({
     loadDataFromServer: function(expTypeId) {
     	var url = this.props.url;
     	if(expTypeId != undefined && expTypeId != ''){
-    		url = url + '/' + expTypeId
+    		url = '/expenseDetails/list' + '/' + expTypeId
+        this.props.selectedDetail = expTypeId;
     	}
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            success: function(data) {
-                this.setState({data: data.result});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(this.props.url, status, err.toString());
-            }.bind(this)
-        });
+      else{
+        url = '/expenseDetails/list'
+        this.props.selectedDetail = '';
+      }
+      $.ajax({
+          url: url,
+          dataType: 'json',
+          success: function(data) {
+              this.setState({data: data.result});
+          }.bind(this),
+          error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+          }.bind(this)
+      });
     },
     handleEditTypeSubmit: function(newType) {
     	var types = this.state.data.expDetList;
@@ -123,7 +104,7 @@ var ExpenseDetailWrapper = React.createClass({
                 type: 'POST',
                 data: json,
                 success: function(data) {
-                    this.loadDataFromServer();
+                    this.loadDataFromServer(this.props.selectedDetail);
                 }.bind(this),
                 error: function(xhr, status, err) {
                     console.error(this.props.url, status, err.toString());
@@ -146,7 +127,7 @@ var ExpenseDetailWrapper = React.createClass({
                 data: json,
                 success: function(data) {
                     //this.setState({data: data});
-                    this.loadDataFromServer();
+                    this.loadDataFromServer(this.props.selectedDetail);
                 }.bind(this),
                 error: function(xhr, status, err) {
                     console.error(this.props.url, status, err.toString());
@@ -154,18 +135,19 @@ var ExpenseDetailWrapper = React.createClass({
             });
         });
     },
-    handleNewTypeDelete: function(theId) {
-        var allData = this.state.data;
-        var expType = allData.find(function(id, value){return id=theId});
-        if(confirm("Er du sikker på du vil slette  " + expType.typeName + "?")){
+    handleDetailDelete: function(theId) {
+        var allData = this.state.data.expDetList;
+        var expDet = allData.find(function(id, value){return id=theId});
+        if(confirm("Er du sikker på du vil slette  " + expDet.description + "?")){
             $.ajax({
-                url: "/expenseTypes/delete/" + theId,
+                url: "/expenseDetails/delete/" + theId,
                 type: 'DELETE',
                 data: {},
                 success: function(data) {
-                    allData.splice(expType, 1);
-                    this.setState({data: allData});
-
+                    allData.splice(expDet, 1);
+                    this.state.data.expDetList = allData;
+                    var newData = {expTypesList : this.state.data.expTypesList, expDetList : allData}
+                    this.setState({data: newData});
                 }.bind(this),
                 error: function(xhr, status, err) {
                     console.error(this.props.url, status, err.toString());
@@ -181,13 +163,13 @@ var ExpenseDetailWrapper = React.createClass({
             }};
     },
     componentDidMount: function() {
-        this.loadDataFromServer();
+        this.loadDataFromServer(this.props.selectedDetail);
     },
     render: function() {
         return (
             <div>
                 <ExpenseDetailFilter selectedDetail={this.props.selectedDetail} data={this.state.data} filterFunc={this.loadDataFromServer}/>
-                <ExpenseDetailList onDetailEdit={this.handleEditTypeSubmit} onTypeDelete={this.handleNewTypeDelete} data={this.state.data}/>
+                <ExpenseDetailList onDetailEdit={this.handleEditTypeSubmit} onDetailDelete={this.handleDetailDelete} data={this.state.data}/>
             </div>
         );
     }
@@ -218,8 +200,8 @@ var ExpenseDetailFilter = React.createClass({
         this.props.filterFunc(filterValue);
     },
     render: function() {
-    	var select = createSelect("", this.props.data.expTypesList, 
-    			this.props.selectedDetail, 
+    	var select = createSelect("", this.props.data.expTypesList,
+    			this.props.selectedDetail,
     			this.filter, true);
         return (
             <div>
@@ -234,7 +216,7 @@ var ExpenseDetailFilter = React.createClass({
 
 var ExpenseDetailList = React.createClass({
     render: function() {
-        var onDelete = this.props.onTypeDelete;
+        var onDelete = this.props.onDetailDelete;
         var rows = {};
         var size = 0;
         if(this.props.data.expDetList){
@@ -243,7 +225,7 @@ var ExpenseDetailList = React.createClass({
             size = this.props.data.expDetList.length;
             rows = this.props.data.expDetList.map(function(expDet, index) {
             return (
-                <ExpenseDetail onDetailEdit={edit} expDet={expDet} key={index} expTypeList={expTypeList} />
+                <ExpenseDetail onDetailEdit={edit} onDetailDelete={onDelete} expDet={expDet} key={index} expTypeList={expTypeList} />
             );
         });
         }
@@ -285,16 +267,8 @@ function createSelect(name, list, selectedDetail, filter, includeNone){
     	        );
     }
     return (
-    		<select name={name} value={selectedDetail} 
+    		<select name={name} value={selectedDetail}
     			onChange={filter}>{options}</select>);
-}
-function findExpType(value, expTypeList){
-	for (i = 0; i < expTypeList.length; i++) {
-	    if(expTypeList[i]._id == value){
-	    	return expTypeList[i];
-	    }
-	}
-	return null;
 }
 
 function createJSONList(temp){
@@ -309,11 +283,4 @@ function createJSONList(temp){
 		console.log(e);
 		return temp;
 	}
-}
-function debug(object){
-	var output = '';
-	for (var property in object) {
-	  output += property + ': ' + object[property]+'; ';
-	}
-	console.log(output);
 }

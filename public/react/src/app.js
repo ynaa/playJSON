@@ -1,7 +1,7 @@
 var Menu = React.createClass({
 	render: function() {
 		return (
-			<nav id='web-nav'> 
+			<nav id='web-nav'>
 				<ul id='menu'>
 					<li className='active'><a href='#Types'><span>Typer</span></a></li>
 					<li><a href='#Details'><span>Detaljer</span></a></li>
@@ -28,14 +28,14 @@ var Content = React.createClass({
             this.setState({page: <ExpenseTypeWrapper url='/expenseTypes/list' />});
         }.bind(this));
         router.addRoute('Details', function(id) {
-            this.setState({page: <ExpenseDetailWrapper url="/expenseDetails/list" />});
+            this.setState({page: <ExpenseDetailWrapper selectedDetail={id} url="/expenseDetails/list" />});
         }.bind(this));
         router.addRoute('Details/:id', function(id) {
-        	var url='/expenseDetails/list/' + id; 
+        	var url='/expenseDetails/list/';
             this.setState({page: <ExpenseDetailWrapper selectedDetail={id} url={url} />});
         }.bind(this));
         router.addRoute('Purchases', function(id) {
-            this.setState({page: <ExpenseTypeWrapper url='/expenseTypes/list' />});
+            this.setState({page: <PurchasesWrapper url='/purchases/list' />});
         }.bind(this));
         router.addRoute('Overview', function(id) {
             this.setState({page: <ExpenseTypeWrapper url='/expenseTypes/list' />});
