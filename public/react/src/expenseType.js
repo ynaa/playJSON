@@ -5,8 +5,14 @@ var ExpenseTypeHeader = React.createClass({
 });
 
 var ExpenseType = React.createClass({
-    onChange: function(){
-        console.log("Changing");
+    onChange: function(cid){
+      console.log("Changing " + this.props.id);
+
+      var value = cid.target.value;
+
+    	var expType = this.props.expType;
+      expType[cid.target.name] = value;
+      this.props.onTypeEdit(expType);
     },
     onDelete: function(){
         this.props.onTypeDelete(this.props.id);
@@ -15,13 +21,13 @@ var ExpenseType = React.createClass({
         return (
             <div className="Row">
                 <div className="Cell">
-                    <input name="typeName" value={this.props.typeName} onChange={this.onChange} />
+                    <MyInput key={this.props.expType._id} name="typeName" value={this.props.expType.typeName} onBlur={this.onChange} />
                 </div>
 
-                <input type="hidden" name="id" value={this.props.id} />
+                <input type="hidden" name="id" value={this.props.expType._id} />
 
                 <div className="Cell">
-                    <a href={"#Details/" + this.props.id} title="">Vis</a>
+                    <a href={"#Details/" + this.props.expType._id} title="">Vis</a>
                 </div>
                 <div className="Cell">
                     <button onClick={this.onDelete} >Slett</button>
@@ -67,7 +73,7 @@ var ExpenseTypeWrapper = React.createClass({
             });
         });
     },
-    handleNewTypeDelete: function(theId) {
+    handleTypeDelete: function(theId) {
         var allData = this.state.data;
         var expType = allData.find(function(id, value){return id=theId});
         if(confirm("Er du sikker på du vil slette  " + expType.typeName + "?")){
@@ -86,6 +92,27 @@ var ExpenseTypeWrapper = React.createClass({
             });
         }
     },
+    handleTypeEdit: function(editType){
+      var types = this.state.data;
+      var json = JSON.stringify(editType);
+      this.setState({data: types}, function() {
+          // `setState` accepts a callback. To avoid (improbable) race condition,
+          // `we'll send the ajax request right after we optimistically set the new
+          // `state.
+          $.ajax({
+              url: "/expenseTypes/edit/" + editType._id,
+              contentType: "application/json; charset=utf-8",
+              type: 'POST',
+              data: json,
+              success: function(data) {
+                  //this.loadExpenseTypesFromServer();
+              }.bind(this),
+              error: function(xhr, status, err) {
+                  console.error(this.props.url, status, err.toString());
+              }.bind(this)
+          });
+      });
+    },
     getInitialState: function() {
         this.setState({data: []});
         return {data: []};
@@ -98,7 +125,7 @@ var ExpenseTypeWrapper = React.createClass({
             <div>
                 <ExpenseTypeHeader/>
                 <ExpenseTypeForm onTypeSubmit={this.handleNewTypeSubmit} />
-                <ExpenseTypeList onTypeDelete={this.handleNewTypeDelete} data={this.state.data}/>
+                <ExpenseTypeList onTypeDelete={this.handleTypeDelete} onTypeEdit={this.handleTypeEdit} data={this.state.data}/>
             </div>
         );
     }
@@ -127,10 +154,11 @@ var ExpenseTypeForm = React.createClass({
 var ExpenseTypeList = React.createClass({
     render: function() {
         var onDelete = this.props.onTypeDelete;
+        var onEdit = this.props.onTypeEdit;
         var size = this.props.data.length;
         var rows = this.props.data.map(function(expType, index) {
             return (
-                <ExpenseType onTypeDelete={onDelete} id={expType._id} typeName={expType.typeName} key={index} />
+                <ExpenseType onTypeDelete={onDelete} onTypeEdit={onEdit} expType={expType} key={index} />
             );
         });
         return (
