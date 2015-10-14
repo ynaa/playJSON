@@ -15,8 +15,8 @@ object ApplicationBuild extends Build {
   val buildScalaVersion = Seq("2.10.4", "2.11.1")
 
   //Dependencies
-  val casbah = "org.mongodb" %% "casbah" % "2.7.3"
-  val salat = "com.novus" %% "salat" % "1.9.8"
+  val casbah = "org.mongodb" %% "casbah" % "2.8.2"
+  //val salat = "com.novus" %% "salat" % "1.9.8"
   val config = "com.typesafe" % "config" % "1.2.1"
   val configs = "com.github.kxbmap" %% "configs" % "0.2.2"
   val guice = "com.google.inject" % "guice" % "3.0"
@@ -24,7 +24,7 @@ object ApplicationBuild extends Build {
 
 //    val typesafeConfig = "com.typesafe" % "config" % "1.2.1"
 
-  val appDependencies = Seq(jdbc, anorm, salat, config, configs, guice, sseguice)
+  val appDependencies = Seq(jdbc, anorm, casbah, config, configs, guice, sseguice)
 
   val main = Project(appName, file(".")).enablePlugins(play.PlayScala).settings(
     version := appVersion,

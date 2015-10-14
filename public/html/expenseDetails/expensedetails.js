@@ -45,7 +45,7 @@ expDetControllers.controller("ExpenseDetailsController", function($scope,
 	};
 	$scope.deleteExpDetail = function(index) {
 		var expDet = $scope.expDetList[index];
-		if(confirm("Er du sikker på du vil slette " + expDet.typeName + "?")){
+		if(confirm("Er du sikker på du vil slette " + expDet.description + "?")){
 			var responsePromise = $http.delete("/expenseDetails/delete/" + expDet._id, {});
 			responsePromise.success(function(dataFromServer, status, headers, config) {
 				$scope.expDetList.splice(index, 1);

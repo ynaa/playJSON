@@ -4,36 +4,36 @@ import db._
 import play.api.Play.current
 import com.mongodb.casbah.Imports._
 
-
-import com.novus.salat._
-import com.novus.salat.dao._
-import mongoContext._
-
 case class ExpenseDetail ( 
     _id: ObjectId = new ObjectId, 
     description : String,
     searchTags : List[String],
     expenseType : Option[ExpenseType] ){
 }
-object ExpenseDetail extends ModelCompanion[ExpenseDetail, ObjectId] {
-  val collection = MongoDBSetup.mongoDB("expensedetail")
-  val dao = new SalatDAO[ExpenseDetail, ObjectId](collection = collection) {}
+object ExpenseDetail {
   
+  val ID = "_id"
+  val DESCRIPTION = "description"
+  val TAGS = "searchTags"
+  val EXPTYPE = "expenseType"
+  
+  val collection = MongoDBSetup.mongoDB("expensedetail")
   
   def getExpenseDetails = {
-    ExpenseDetail.findAll.sort(MongoDBObject("description" -> 1)).toList
+    val details = collection.find.sort(MongoDBObject("description" -> 1)).toList
+    createExpenseDetails(details)
   }
 
   def getExpenseDetailsByExpTypeId(expTypeId : ObjectId) = {
     val where = MongoDBObject("expenseType._id" -> expTypeId)
     val order = MongoDBObject("description" -> 1)
-        
-    ExpenseDetail.find(where).sort(order).toList
+    val details = collection.find(where).sort(order).toList
+    createExpenseDetails(details)
   }
 
   def deleteExpenseDetail(expDetId : ObjectId) = {
     updatePurchaseByExpDetId(expDetId, None)
-    ExpenseDetail.remove(MongoDBObject("_id" -> expDetId))
+    collection.remove(MongoDBObject("_id" -> expDetId))
   }
   
   def updatePurchaseByExpDetId(expDetId : ObjectId, expDet : Option[ExpenseDetail]){
@@ -42,20 +42,52 @@ object ExpenseDetail extends ModelCompanion[ExpenseDetail, ObjectId] {
       val newPurchase = Purchase(purchase._id, purchase.bookedDate, purchase.interestDate, 
                                  purchase.textcode, purchase.description, purchase.amount, 
                                  purchase.archiveref, purchase.account, expDet)
-      Purchase.save(newPurchase.copy(_id = newPurchase._id))
+      Purchase.updatePurchase(newPurchase.copy(_id = newPurchase._id))
     })
   }
 
   def getExpenseDetail(expDetId : ObjectId) = {
-    ExpenseDetail.findOne(MongoDBObject("_id" -> expDetId))
+    collection.findOne(MongoDBObject("_id" -> expDetId)) match {
+    	case Some(ed) => Some(convertFromMongoObject(ed))
+    	case None => None
+    }
   }
 
   def addExpenseDetail(expDet : ExpenseDetail) {
-    ExpenseDetail.insert(expDet)
+    collection.insert(convertToMongoObject(expDet))
   }
 
   def updateExpenseDetail(expDet : ExpenseDetail) {
     updatePurchaseByExpDetId(expDet._id, Some(expDet))
-    ExpenseDetail.save(expDet.copy(_id = expDet._id)) 
+    collection.save(convertToMongoObject(expDet.copy(_id = expDet._id))) 
+  }
+  
+  private def createExpenseDetails(dbObjects: List[DBObject] ) = {
+    dbObjects.map( dbO => convertFromMongoObject(dbO))
+  }
+  
+  def convertFromMongoObject(dbObject: DBObject) : ExpenseDetail = {
+    val expType = dbObject.getAs[DBObject](EXPTYPE)  match {
+      case Some(et) => Some(ExpenseType.convertFromMongoObject(et))
+      case None => None
+    }
+    ExpenseDetail(
+      dbObject.getAsOrElse[ObjectId](ID, mongoFail), 
+      dbObject.getAsOrElse[String](DESCRIPTION, mongoFail), 
+      dbObject.getAsOrElse[List[String]](TAGS, mongoFail), 
+      expType
+    )
+  }
+
+  def convertToMongoObject(expDetail: ExpenseDetail): DBObject = {
+	val builder = MongoDBObject.newBuilder
+    builder += ID -> expDetail._id
+    builder += DESCRIPTION  -> expDetail.description 
+    builder += TAGS   -> expDetail.searchTags
+    expDetail.expenseType match {
+      case Some(et) => builder += EXPTYPE  -> ExpenseType.convertToMongoObject(et)
+      case None =>
+    }
+    builder.result()
   }
 }
