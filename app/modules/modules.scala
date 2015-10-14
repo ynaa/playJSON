@@ -11,7 +11,7 @@ class ProdModule extends ScalaModule {
 
 class DevModule extends ScalaModule {
   def configure() {
-    bind[MyEconomyDbApi].to[DummyDb]
+    bind[MyEconomyDbApi].to[MongoDb]
   }
 }
 
