@@ -1,11 +1,10 @@
-define(['react', 'menu', 'content'], function(React, Menu, Content){
-	var App = React.createClass({
-			render: function() {
-					return <div><Menu/><div id='content'>
-					
-					</div></div>;
-			}
-	});
+(function(React, module, undefined) {  
 
-  return App;
-});
+  module.exports = React.createClass({
+    render: function() {
+      return (
+        <div>Heisann<div id='content'>Heisann 2</div></div>
+      );
+    }
+  });
+}(React, module));

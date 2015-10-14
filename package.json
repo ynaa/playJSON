@@ -1,0 +1,31 @@
+{
+  "name": "Mitt-budsjett",
+  "version": "0.0.1",
+  "devDependencies": {
+    "gulp": "3.9.0",
+    "gulp-run": "1.6.5",
+    "gulp-less": "2.0.1",
+    "gulp-concat": "2.4.3",
+    "gulp-uglify": "1.0.2",
+    "gulp-minify-css": "0.3.11",
+    "gulp-jshint": "1.9.0",
+    "browser-sync": "1.8.2",
+    "browserify": "3.44.2",
+    "vinyl-source-stream": "1.0.0",
+    "vinyl-buffer": "1.0.0",
+    "reactify": "0.17.1",
+    "del": "1.1.1"
+  },
+  "paths": {
+    "less": "assets/less/*.less",
+    "js": "./public/src/react/src/**/*.js",
+    "jsx": "./public/src/react/src/**/*.jsx",
+    "app": "./public/react/src/app.js",
+    "html": "*.html"
+  },
+  "dest": {
+    "style": "style.css",
+    "app": "app.js",
+    "dist": "./public/react/build"
+  }
+}
