@@ -2,10 +2,15 @@ import db._
 import modules._
 import com.google.inject._
 import play.api._
-import play.api.Play
 import play.api.Play.current
+import play.api.mvc._
+import play.api.http.HeaderNames._
 
-object Global extends GlobalSettings {
+import scala.concurrent.ExecutionContext.Implicits.global
+
+
+
+object Global extends WithFilters(new CorsFilter) with GlobalSettings {
 
     private lazy val injector = {
         Play.isTest match {
@@ -28,6 +33,5 @@ object Global extends GlobalSettings {
 
     override def onStart(app: play.api.Application) {
         Logger.info("Application has started")
-    }
-
+    }    
 }

@@ -1,4 +1,6 @@
-var router = (function () {
+define(['react'], function(React){
+
+  var Router = (function () {
     "use strict";
     var routes = [];
 
@@ -38,4 +40,7 @@ var router = (function () {
         load: load,
         start: start
     };
-}());
+  }()
+  );
+  return Router;
+});

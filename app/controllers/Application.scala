@@ -5,6 +5,13 @@ import play.api.mvc._
 
 object Application extends Controller {
   
+  def preflight(all: String) = Action {
+    Ok("").withHeaders("Access-Control-Allow-Origin" -> "*",
+      "Allow" -> "*",
+      "Access-Control-Allow-Methods" -> "POST, GET, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers" -> "Origin, X-Requested-With, Content-Type, Accept, Referrer, User-Agent");
+  }
+  
   def index = Action {
     Redirect("/public/html/index.html")
   }

@@ -46,6 +46,7 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
       import java.io.File
       val fileContent = scala.io.Source.fromFile(file.ref.file, "ISO-8859-1")
       val lines = fileContent.getLines()
+      lines.foreach(println)
       val list = lines.foldLeft(List.empty[String])((tempList, l) => tempList ::: filterLine(l))
       val purchases = createPurchases(list, bank)
       purchases.foreach(p => db.addPurchase(p))
