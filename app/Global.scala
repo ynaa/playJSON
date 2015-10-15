@@ -8,8 +8,6 @@ import play.api.http.HeaderNames._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
-
 object Global extends WithFilters(new CorsFilter) with GlobalSettings {
 
     private lazy val injector = {
