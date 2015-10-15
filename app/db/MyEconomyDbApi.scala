@@ -36,7 +36,7 @@ trait MyEconomyDbApi {
   //Purchases
   def getPurchase(pId : ObjectId) : Option[Purchase];
   
-  def getPurchases(page : Int = 0, pageSize : Int = 10, orderBy : Int = 1,
+  def getPurchases(page : Int = 0, orderBy : Int = 1,
     expTypeId : Option[ObjectId] = None,
     expDetId : String = "",
     start : DateTime = null,

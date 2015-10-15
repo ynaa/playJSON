@@ -28,6 +28,8 @@ GET     /yearinterval/:year                   @controllers.OverviewController.ge
 POST    /fileupload                           @controllers.FileUploadController.upload
 GET     /update                               @controllers.FileUploadController.update
 
+OPTIONS /*all                                 controllers.Application.preflight(all)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /public/*file               controllers.Assets.at(path="/public", file)

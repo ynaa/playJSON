@@ -3,6 +3,7 @@ package ynaa.jsontest.domain
 import db._
 import java.util.Date
 
+import play.Play
 import play.api.Play.current
 import com.mongodb.casbah.Imports._
 import org.joda.time.Interval
@@ -23,6 +24,8 @@ case class Purchase(
 
 object Purchase {
   
+  val numPerPages: Int = Play.application().configuration().getInt("purchasesPerPage")
+  
   val collection = MongoDBSetup.mongoDB("purchase")
   
   val ID = "_id"
@@ -38,7 +41,7 @@ object Purchase {
 
   val columns = List("dummy", "_id", "bookedDate", "description", "amount", "expenseDetail")
 
-  def getPurchases(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1,
+  def getPurchases(page: Int = 0, orderBy: Int = 1,
     expTypeId: Option[ObjectId] = None,
     expDetId: String = "",
     start: DateTime = null,
@@ -51,10 +54,10 @@ object Purchase {
     val ps = createPurchases(collection.find(where).toList)
     val sum = ps.foldLeft(0.0)((tempval, p) => tempval + p.amount).toLong
     val totalRows = collection.count(where);
-    val offset = pageSize * page
+    val offset = numPerPages * page
     
-    val purchases = createPurchases(collection.find(where).sort(order).limit(pageSize).skip(offset).toList)
-    Page(purchases, page, offset, totalRows, sum)
+    val purchases = createPurchases(collection.find(where).sort(order).limit(numPerPages).skip(offset).toList)
+    Page(purchases, page, offset, totalRows, sum, numPerPages )
   }
 
   def getPurhcaseByExpDetId(expDetId: Option[ObjectId]) = {
@@ -180,7 +183,7 @@ object Purchase {
 /**
  * Helper for pagination.
  */
-case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long, totalSum: Long) {
+case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long, totalSum: Long, numPerPages: Int ) {
   lazy val prev = Option(page - 1).filter(_ >= 0)
   lazy val next = Option(page + 1).filter(_ => (offset + items.size) < total)
 }

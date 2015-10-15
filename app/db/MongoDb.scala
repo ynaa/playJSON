@@ -82,12 +82,12 @@ class MongoDb extends MyEconomyDbApi {
     }
   }
 
-  override def getPurchases(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1,
+  override def getPurchases(page: Int = 0, orderBy: Int = 1,
     expTypeId: Option[ObjectId] = None,
     expDetId: String = "",
     start: DateTime = null,
     slutt: DateTime = null): Page[Purchase] = {
-    Purchase.getPurchases(page, pageSize, orderBy, expTypeId, expDetId, start, slutt)
+    Purchase.getPurchases(page, orderBy, expTypeId, expDetId, start, slutt)
   }
 
   override def getPurchasesByExpenseTypeAndDate(expType: ExpenseType, ObjectIderval: Interval): List[Purchase] = {

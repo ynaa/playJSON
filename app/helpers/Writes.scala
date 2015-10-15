@@ -120,7 +120,8 @@ implicit val pageWrites = new Writes[Page[Purchase]] {
           "page" -> page.page,
           "offset" -> page.offset,
           "total" -> page.total,
-          "totalSum" -> page.totalSum
+          "totalSum" -> page.totalSum,
+          "numPerPages" -> page.numPerPages
       )
     }
   }

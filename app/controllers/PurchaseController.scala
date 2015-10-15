@@ -21,7 +21,7 @@ class PurchaseController @Inject()(db: MyEconomyDbApi)  extends Controller {
       case Some(et) => Some(new ObjectId(et))
       case None => None
     }
-    val purchases = db.getPurchases(page, 30, 1, exTypeObjectId, expDet, convertToDate(start), convertToDate(slutt))
+    val purchases = db.getPurchases(page, 1, exTypeObjectId, expDet, convertToDate(start), convertToDate(slutt))
     val expDets = db.getExpenseDetails.filter(ed => {
       exTypeObjectId match {
         case Some(etId) => {
