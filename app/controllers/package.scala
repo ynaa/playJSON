@@ -6,7 +6,7 @@ import org.joda.time._
 import ynaa.jsontest.domain._
 
 import com.typesafe.config._
-import com.github.kxbmap.configs._
+import collection.JavaConversions._
 
 
 package object controllers {
@@ -88,7 +88,9 @@ package object controllers {
 
   lazy val config = ConfigFactory.load("myEconomyApp")
 
-  def read(configKey: String) = config.get[String](configKey)
+  def read(configKey: String) = config.getString(configKey)
 
-  def readAsList(configKey: String): List[String] = config.get[List[String]](configKey)
+  def readAsList(configKey: String): List[String] = {
+    config.getStringList(configKey).toList
+  }
 }

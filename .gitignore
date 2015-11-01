@@ -14,4 +14,5 @@ activator-launch-1.2.3.jar
 activator.bat
 myEconomyJSON.sublime-project
 myEconomyJSON.sublime-workspace
-
+.cache-main
+.cache-tests

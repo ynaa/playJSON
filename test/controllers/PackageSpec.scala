@@ -1,13 +1,14 @@
 package controllers
 
 import db._
-import org.specs2.mutable._
 import java.util._
 import org.joda.time._
 import ynaa.jsontest.domain._
 import com.mongodb.casbah.Imports._
 
-class PackageSpec extends Specification {
+class PackageSpec{
+/*
+  extends Specification {
 
 	"PackageSpec" should {
 		"convert String To Date " in {
@@ -61,4 +62,6 @@ class PackageSpec extends Specification {
 			"Hello world" must endWith("world")
 		}
 	}
+	
+	*/
 }

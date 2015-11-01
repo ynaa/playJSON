@@ -1,22 +1,23 @@
 package modules
 
 import db._
-import com.tzavellas.sse.guice.ScalaModule
-
-class ProdModule extends ScalaModule {
+import com.google.inject.AbstractModule
+import com.google.inject.name.Names
+  
+class ProdModule extends AbstractModule {
   def configure() {
-    bind[MyEconomyDbApi].to[MongoDb]
+      bind(classOf[MyEconomyDbApi]).to(classOf[MongoDb])
   }
 }
 
-class DevModule extends ScalaModule {
+class DevModule extends AbstractModule {
   def configure() {
-    bind[MyEconomyDbApi].to[MongoDb]
+      bind(classOf[MyEconomyDbApi]).to(classOf[MongoDb])
   }
 }
 
-class TestModule extends ScalaModule {
+class TestModule extends AbstractModule {
   def configure() {
-    bind[MyEconomyDbApi].to[DummyDb]
+      bind(classOf[MyEconomyDbApi]).to(classOf[DummyDb])
   }
 }

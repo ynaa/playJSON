@@ -1,7 +1,6 @@
 package controllers
 
 import db._
-import org.specs2.mutable._
 
 import org.joda.time._
 import ynaa.jsontest.domain._
@@ -11,7 +10,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.text.DateFormat
 
-class FileuploadControllerSpec extends Specification {
+class FileuploadControllerSpec {
+  /*extends Specification 
 
     "FileuploadControllerSpec" should {
         val db = new DummyDb
@@ -108,4 +108,5 @@ class FileuploadControllerSpec extends Specification {
         val amount = purchase.amount
         amount must beEqualTo (expectedAmount)
     }
+    */
 }
