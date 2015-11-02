@@ -1,6 +1,6 @@
 package helpers
 
-import ynaa.jsontest.domain._
+import domain._
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._

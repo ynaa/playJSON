@@ -4,7 +4,7 @@ import java.util.Date
 import org.joda.time.Interval
 import com.mongodb.casbah.Imports._
 import org.joda.time.DateTime
-import ynaa.jsontest.domain._
+import domain._
 //import ynaa.myEconomy.domain.Page
 
 trait MyEconomyDbApi {

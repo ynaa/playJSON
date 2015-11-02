@@ -7,7 +7,7 @@ import play.api.data._
 import play.api.data.Forms._
 import java.util.Date
 import org.joda.time._
-import ynaa.jsontest.domain._
+import domain._
 import play.api.libs.json._
 import helpers.Writes._
 import com.google.inject._

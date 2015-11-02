@@ -1,5 +1,3 @@
-package ynaa.jsontest
-
 import com.mongodb.MongoException
 
 package object domain {

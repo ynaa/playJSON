@@ -7,7 +7,7 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.json.JsString
 import com.mongodb.casbah.Imports._
-import ynaa.jsontest.domain._
+import domain._
 import java.text.SimpleDateFormat
 import org.joda.time.DateTime
 import helpers.Writes._

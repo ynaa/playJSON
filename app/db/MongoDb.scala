@@ -5,7 +5,7 @@ import java.util.Date
 import play.Play
 import com.mongodb.casbah.Imports._
 import org.joda.time.DateTime
-import ynaa.jsontest.domain._
+import domain._
 import com.google.inject._
 import com.mongodb.casbah.commons.MongoDBObject
 

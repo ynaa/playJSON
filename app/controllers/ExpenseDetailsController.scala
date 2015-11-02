@@ -6,7 +6,7 @@ import play.api.libs.json._
 import play.api._
 import play.api.mvc._
 import play.api.libs.json.JsString
-import ynaa.jsontest.domain._
+import domain._
 import com.mongodb.casbah.Imports._
 
 import com.google.inject._

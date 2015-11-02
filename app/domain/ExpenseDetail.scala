@@ -1,4 +1,4 @@
-package ynaa.jsontest.domain
+package domain
 
 import db._
 import play.api.Play.current

@@ -3,7 +3,7 @@
 import db._
 import java.text.SimpleDateFormat
 import org.joda.time._
-import ynaa.jsontest.domain._
+import domain._
 
 import com.typesafe.config._
 import collection.JavaConversions._

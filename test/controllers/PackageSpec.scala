@@ -3,7 +3,7 @@ package controllers
 import db._
 import java.util._
 import org.joda.time._
-import ynaa.jsontest.domain._
+import domain._
 import com.mongodb.casbah.Imports._
 
 class PackageSpec{

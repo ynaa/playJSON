@@ -1,18 +1,12 @@
 package controllers
 
 import db._
+import domain._
+import collection.mutable.Stack
+import org.scalatest._
 
-import org.joda.time._
-import ynaa.jsontest.domain._
-import com.mongodb.casbah.Imports._
-
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.text.DateFormat
-
-class FileuploadControllerSpec {
-  /*extends Specification 
-
+class FileuploadControllerSpec extends FlatSpec with Matchers {
+  /*
     "FileuploadControllerSpec" should {
         val db = new DummyDb
         val controller = new FileUploadController(db)
@@ -108,5 +102,6 @@ class FileuploadControllerSpec {
         val amount = purchase.amount
         amount must beEqualTo (expectedAmount)
     }
+    * 
     */
 }

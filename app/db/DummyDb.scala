@@ -1,5 +1,5 @@
 package db
-import ynaa.jsontest.domain._
+import domain._
 import com.mongodb.casbah.Imports._
 import java.util.Date
 import java.util.Calendar

@@ -5,7 +5,7 @@ import play.api.libs.json._
 import play.api._
 import play.api.mvc._
 import play.api.libs.json.JsString
-import ynaa.jsontest.domain.ExpenseType
+import domain.ExpenseType
 import com.mongodb.casbah.Imports._
 import helpers._
 import helpers.Writes._
