@@ -44,7 +44,7 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
     val bank = convertToString(requestMap.get("bank"))
     request.body.file("uploadedFile").map { file =>
       import java.io.File
-      val fileContent = scala.io.Source.fromFile(file.ref.file, "ISO-8859-1")
+      val fileContent = scala.io.Source.fromFile(file.ref.file, "UTF-8")
       val lines = fileContent.getLines()
       val list = lines.foldLeft(List.empty[String])((tempList, l) => tempList ::: filterLine(l))
       val purchases = createPurchases(list, bank)
@@ -71,13 +71,26 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
     val linje = line.replaceAll("\"", "")
     if (lineContainsWordInList(linje, readAsList("exluded-lines"))) {
       Nil
+    } else if(isFromSavingsAccount(linje)){
+      Nil
     } else if (!(linje.length == 0 || linje.startsWith("BOKFØRINGSDATO") ||
       linje.startsWith("Bok") || linje.startsWith("Bokført") ||
       linje.contains("UTGÅENDE SALDO"))) {
       linje :: Nil
-    } else {
+    } 
+    else {
       Nil
     }
+  }
+  
+  def isFromSavingsAccount(linje: String) = {
+    val savingsAccounts = readAsList("sparekontoer")
+    val splittedLine = linje.split(";")
+    val fromAccount = splittedLine.length == 8 match {
+      case true => splittedLine(6)
+      case false => splittedLine(7)
+    }
+    savingsAccounts.contains(fromAccount) 
   }
 
   def createPurchases(fileAsList : List[String], bank : String) = {
@@ -86,13 +99,32 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
       val lineItems = stringSplit(aLine)
       val purchase = createPurchase(lineItems, bank)
       if (purchase != null) {
-        val tt = matchExpDetailText(purchase.description, expenseDetails)
+        val savings = checkForSavings(aLine, expenseDetails)
+        val tt = savings match {
+          case optEd: Some[ExpenseDetail] => optEd
+          case None => matchExpDetailText(purchase.description, expenseDetails) 
+        }
         createPurchase(purchase, tt)
       } else {
         purchase
       }
     })
     purchases
+  }
+  
+  def checkForSavings(line: String, expenseDetails : List[ExpenseDetail]) : Option[ExpenseDetail] = {
+    val savingsAccounts = readAsList("sparekontoer")
+    val splittedLine = line.split(";")
+    val toAccount = splittedLine.length == 8 match {
+      case true => splittedLine(7)
+      case false => splittedLine(8)
+    }
+    savingsAccounts.contains(toAccount) match {
+      case true => {
+        expenseDetails.find(ed => ed.description.equals("Fast sparing"))
+      }
+      case false => Option.empty 
+    }
   }
 
   def createPurchase(purchase : Purchase, expDet : Option[ExpenseDetail]) = {
@@ -101,7 +133,7 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
   }
 
   def stringSplit(str : String) : List[String] = {
-    val li : List[String] = str.split("\t").toList
+    val li : List[String] = str.split(";").toList
     li.map { x => x.trim }
   }
 
@@ -131,20 +163,22 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
       case _ => None
     }
   }
-
+  
   def checkIfStringContainsWholeWord(string : String, word : String) : Boolean = {
-    val pattern = ("""(\.|\s|,|^)?(""" + word.toUpperCase + """)(\.|\s|,)?""").r
-    val result = pattern findFirstIn string.toUpperCase
-    result match {
-      case None => false
-      case _ => true
-    }
+    string.toUpperCase.contains(word)
   }
 
   def createSPV(list : List[String], formatter : DateFormat) : Purchase = {
-    val booked : Date = formatter.parse(list(0))
+    val dd = list(0).length() == 10 match {
+      case true => list(0)
+      case false => list(0).substring(1)
+    }
+    val booked : Date = formatter.parse(dd)
     val interest : Date = formatter.parse(list(1))
-    val ammount = list(4)
+    val ammount = list(4).isEmpty() match {
+      case true => list(5)
+      case false => list(4)
+    }
     val amount = createDecimal(ammount)
     val desc = list(3)
     val text = list(2)
@@ -196,4 +230,5 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
     else
       amm.toInt
   }
+
 }

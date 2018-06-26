@@ -67,7 +67,7 @@ class  ExpenseDetailsController @Inject()(db: MyEconomyDbApi) extends Controller
   private def getRequestParameter(request : Request[AnyContent], paramName : String) : String = {
     val paramVal = request.body.asJson.get \ paramName
     paramVal match {
-      case s : JsString => s.value
+      case s : JsDefined => s.as[JsString].value
       case _ => ""
     }
   }
