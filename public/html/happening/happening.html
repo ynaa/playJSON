@@ -1,0 +1,65 @@
+<div>
+  <div>
+    <h2>Registrer en hendelse</h2>
+    <div>
+        Oppretter en utgiftsdetalj og knytter utgifter til denne.
+        Gi hendelse navn, velg en utgiftstype.
+    </div>
+    <div>
+        Fyll inn datoer, og hent utgifter for intervallet og velg hvilke som skal være med i hendelsen.
+    </div>
+  </div>
+  <div>
+    <form name="regform">
+      <div>
+        <input name="happeningName" required placeholder="Navn på happening" ng-model="newHappening.happeningName">
+        <select name="expType" required ng-model="newHappening.expType" ng-options="expType._id as expType.typeName for expType in expenseTypes">
+         <option value="">-- Velg utgiftsttype --</option>
+        </select>
+      </div>
+      <div>Periode</div>
+      <div>
+        <input required type="text" name="start" ng-model="newHappening.start" datepicker>
+        <input required type="text" name="slutt" ng-model="newHappening.slutt" datepicker>
+      </div>
+      <div>&nbps;</div>
+      <div>&nbps;</div>
+      <button class="btn btn-primary" ng-click="getPurchases()">Finn utgifter</button>
+
+      <div ng-show="filtered">
+        <div>
+          <h2>Velg utgifter som skal være med i hendelse, {{purchasesList.size}} type(r)</h2>
+        </div>
+        <div class="Table">
+          <div class="Heading">
+           <div class="Cell"><p>Velg</p></div>
+           <div class="Cell"><p>Beskrivelse</p></div>
+           <div class="Cell"><p>Dato</p></div>
+           <div class="Cell"><p>Beløp</p></div>
+          </div>
+          <div class="Row" ng-repeat="purchase in purchasesList track by $index">
+            <div class="Cell">
+              <div>
+                <input type="checkbox"
+
+                value="{{purchasesList[$index]._id}}"
+                ng-checked="selection.indexOf(purchasesList[$index]._id) > -1"
+                ng-click="toggleSelection(purchasesList[$index]._id)"/>
+              </div>
+            </div>
+            <div class="Cell">
+              {{purchasesList[$index].description}}
+            </div>
+            <div class="Cell">
+              {{ purchasesList[$index].bookedDate | date:'dd.MM.yyyy' }}
+            </div>
+            <div class="Cell">
+              {{purchasesList[$index].amount}}
+            </div>
+          </div>
+        </div>
+        <button type="submit" ng-click="add(newHappening)" class="btn btn-primary">Opprett hendelse</button>
+      </div>
+  	</form>
+  </div>
+</div>

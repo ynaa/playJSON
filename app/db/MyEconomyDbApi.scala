@@ -41,7 +41,9 @@ trait MyEconomyDbApi {
     expDetId : String = "",
     start : DateTime = null,
     slutt : DateTime = null) : Page[Purchase];
-//  
+  
+  def getAllPurchases(start: DateTime = null, slutt: DateTime = null): List[Purchase] ;
+
   def updatePurchase(newPurchase : Purchase);
   
   def deletePurchase(purchaseId : ObjectId);

@@ -110,10 +110,7 @@ object Writes {
     (JsPath \ "archiveref").read[String] and
     (JsPath \ "expenseDetail").readNullable[ExpenseDetail])(Purchase.apply _)
 
-
-/*case class Page[A](items : Seq[A], page : Int, offset : Long, total : Long, totalSum : Long)   */
-
-implicit val pageWrites = new Writes[Page[Purchase]] {
+  implicit val pageWrites = new Writes[Page[Purchase]] {
     def writes(page : Page[Purchase]) = {
       Json.obj(
           "items" -> page.items,
@@ -125,4 +122,13 @@ implicit val pageWrites = new Writes[Page[Purchase]] {
       )
     }
   }
+  
+  case class Happening(expType: String, name: String, purchases: List[String])
+  
+  implicit val happeningReads : Reads[Happening] = (
+    (__ \\ "expType").read[String] and
+    (__ \\ "name").read[String] and
+    (__ \\ "purchases").read[List[String]]
+    )(Happening.apply _)
+
 }

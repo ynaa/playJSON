@@ -26,7 +26,7 @@ class  ExpenseDetailsController @Inject()(db: MyEconomyDbApi) extends Controller
     val result = Map("expDetList" -> expenseDetailsAsJson, "expTypesList" -> expTypes)
     Ok(Json.toJson(Json.obj("result" -> result)))
   }
-
+  
   def add = Action { request =>
     val name = getRequestParameter(request, "detName")
     val tags = getRequestParameter(request, "detTags").split(",").toList.map(s => s.trim)
@@ -35,6 +35,30 @@ class  ExpenseDetailsController @Inject()(db: MyEconomyDbApi) extends Controller
     val newExpDet = ExpenseDetail(new ObjectId(), name, tags, expType)
     db.addExpenseDetail(newExpDet)
     Ok("OK")
+  }
+  
+  def addHappening = Action { request =>
+    val h = parseRequest(request, "happening")
+    handle(h)
+    Ok("OK")
+  }
+  
+  def handle(h: Happening) {
+    val tags = List(h.name) :: Nil
+    val expType = db.getExpenseType(new ObjectId(h.expType))
+    val newExpDet = ExpenseDetail(new ObjectId(), h.name, List(h.name.toUpperCase), expType)
+    db.addExpenseDetail(newExpDet)
+    h.purchases
+      .map(pid => {
+        db.getPurchase(new ObjectId(pid)) match {
+          case Some(p) => Some(Purchase(p._id, p.bookedDate, p.interestDate, p.textcode, p.description, p.amount, p.archiveref, p.account, Some(newExpDet)))
+          case None => None
+        }
+      })
+      .map(optP => optP match {
+        case Some(p) => db.updatePurchase(p)
+        case None => None
+      })
   }
 
   def edit(expDetId : String) = Action { request =>
@@ -69,6 +93,16 @@ class  ExpenseDetailsController @Inject()(db: MyEconomyDbApi) extends Controller
     paramVal match {
       case s : JsDefined => s.as[JsString].value
       case _ => ""
+    }
+  }
+
+  private def parseRequest(request : Request[AnyContent], paramName : String) : Happening  =  {
+    request.body.asJson.get.validate[Happening]((JsPath \ paramName).read[Happening]) match {
+      case s: JsSuccess[Happening] =>  s.get
+      case e: JsError => {
+        println(e.errors)
+        throw new RuntimeException("Error");
+      }
     }
   }
 }

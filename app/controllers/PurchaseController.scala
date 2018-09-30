@@ -42,6 +42,13 @@ class PurchaseController @Inject()(db: MyEconomyDbApi)  extends Controller {
 
     Ok(Json.toJson(Json.obj("purchasesList" -> purchasesAsJson, "expDetList" -> expDets)))
   }
+  
+  
+  def listAll(start : String = "", slutt : String = "") = Action {
+    val purchases = db.getAllPurchases(convertToDate(start), convertToDate(slutt))
+    val purchasesAsJson = Json.toJson(purchases)
+    Ok(Json.toJson(Json.obj("purchasesList" -> purchasesAsJson)))
+  }
 
   def edit(pId : String) = Action { request =>
     val purchase = db.getPurchase(new ObjectId(pId))

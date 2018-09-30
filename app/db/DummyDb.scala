@@ -177,8 +177,12 @@ class DummyDb extends MyEconomyDbApi {
     val splittedResult = result.splitAt(offset)._2.take(10)
     Page(splittedResult, page, offset, totalRows, sum.toLong, 10)
   }
+  
+   override def getAllPurchases(start: DateTime = null, slutt: DateTime = null): List[Purchase] = {
+    purchases
+  }
 
-  override def getFirstDate = new DateTime(purchases.minBy(_.bookedDate).bookedDate)
+   override def getFirstDate = new DateTime(purchases.minBy(_.bookedDate).bookedDate)
 
   override def getLastDate = new DateTime(purchases.maxBy(_.bookedDate).bookedDate)
 

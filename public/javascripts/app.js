@@ -1,6 +1,6 @@
 var myEconomyApp = angular.module('myEconomyApp', [ 'ngRoute',
 		'expTypeControllers', 'expDetControllers', 'purchasesControllers',
-		'overviewController', "fileuploadController" ]);
+		'overviewController', "fileuploadController", "happeningController" ]);
 
 myEconomyApp.config([ '$routeProvider', function($routeProvider) {
 	$routeProvider.when('/list', {
@@ -18,6 +18,9 @@ myEconomyApp.config([ '$routeProvider', function($routeProvider) {
 	}).when('/overview', {
 		templateUrl : 'overview/overview.html',
 		controller : 'OverviewController'
+	}).when('/happening', {
+		templateUrl : 'happening/happening.html',
+		controller : 'HappeningController'
 	}).when('/fileupload', {
 		templateUrl : 'fileupload/fileupload.html',
 		controller : 'FileuploadController'
@@ -68,7 +71,7 @@ myEconomyApp.filter('orderObjectBy', function() {
 					return a > b ? 1 : -1;
 				}
 			}
-			else{	
+			else{
 				return (a > b ? 1 : -1);
 			}
 		});

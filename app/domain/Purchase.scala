@@ -59,6 +59,18 @@ object Purchase {
     val purchases = createPurchases(collection.find(where).sort(order).limit(numPerPages).skip(offset).toList)
     Page(purchases, page, offset, totalRows, sum, numPerPages )
   }
+  
+  
+  def getAllPurchases(start: DateTime = null, slutt: DateTime = null): List[Purchase] = {
+    val where = createWhere(None, "-2", start, slutt)
+    val order = MongoDBObject("bookedDate" -> 1)
+
+    val ps = createPurchases(collection.find(where).toList)
+    val sum = ps.foldLeft(0.0)((tempval, p) => tempval + p.amount).toLong
+    val totalRows = collection.count(where);
+    
+    createPurchases(collection.find(where).sort(order).toList)
+  }
 
   def getPurhcaseByExpDetId(expDetId: Option[ObjectId]) = {
     val where = createWhere(None, expDetId match {
