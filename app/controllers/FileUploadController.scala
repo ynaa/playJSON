@@ -169,7 +169,6 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
   }
 
   def createSPV(list : List[String], formatter : DateFormat) : Purchase = {
-    println("Linje: " + list)
     val dd = list(0).length() == 10 match {
       case true => list(0)
       case false => list(0).substring(1)
@@ -224,13 +223,17 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
   }
 
   def createDecimal(amount : String) : Int = {
-    println(amount)
     val amm = amount.replace(" ", "")
     val index = amm.indexOf(",")
     if (index > 0)
       amm.substring(0, index).toInt
-    else
-      amm.toInt
+    else {
+      try {
+        amm.toInt
+      }   
+      catch {
+        case _: NumberFormatException => 0
+      }
+    }
   }
-
 }
