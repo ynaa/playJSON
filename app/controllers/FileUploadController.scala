@@ -169,6 +169,7 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
   }
 
   def createSPV(list : List[String], formatter : DateFormat) : Purchase = {
+    println("Linje: " + list)
     val dd = list(0).length() == 10 match {
       case true => list(0)
       case false => list(0).substring(1)
