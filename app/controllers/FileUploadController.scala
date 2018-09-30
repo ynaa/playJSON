@@ -71,8 +71,6 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
     val linje = line.replaceAll("\"", "")
     if (lineContainsWordInList(linje, readAsList("exluded-lines"))) {
       Nil
-    } else if(isFromSavingsAccount(linje)){
-      Nil
     } else if (!(linje.length == 0 || linje.startsWith("BOKFØRINGSDATO") ||
       linje.startsWith("Bok") || linje.startsWith("Bokført") ||
       linje.contains("UTGÅENDE SALDO"))) {
@@ -83,45 +81,79 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
     }
   }
   
-  def isFromSavingsAccount(linje: String) = {
-    val savingsAccounts = readAsList("sparekontoer")
-    val splittedLine = linje.split(";")
-    val fromAccount = splittedLine.length == 8 match {
-      case true => splittedLine(6)
-      case false => splittedLine(7)
-    }
-    savingsAccounts.contains(fromAccount) 
-  }
-
   def createPurchases(fileAsList : List[String], bank : String) = {
     val expenseDetails = db.getExpenseDetails
-    val purchases = fileAsList.map(aLine => {
-      val lineItems = stringSplit(aLine)
-      val purchase = createPurchase(lineItems, bank)
-      if (purchase != null) {
-        val savings = checkForSavings(aLine, expenseDetails)
-        val tt = savings match {
-          case optEd: Some[ExpenseDetail] => optEd
-          case None => matchExpDetailText(purchase.description, expenseDetails) 
+    val purchases = fileAsList
+      .filter(line => notIternal(line))
+      .map(aLine => {
+        val lineItems = stringSplit(aLine)
+        val purchase = createPurchase(lineItems, bank)
+        if (purchase != null) {
+          val specialTransactions = checkForSpecials(aLine, expenseDetails)
+          val tt = specialTransactions match {
+            case optEd: Some[ExpenseDetail] => optEd
+            case None => matchExpDetailText(purchase.description, expenseDetails) 
+          }
+          createPurchase(purchase, tt)
+        } else {
+          purchase
         }
-        createPurchase(purchase, tt)
-      } else {
-        purchase
-      }
     })
     purchases
   }
   
-  def checkForSavings(line: String, expenseDetails : List[ExpenseDetail]) : Option[ExpenseDetail] = {
+  
+  def checkForSpecials(line: String, expenseDetails : List[ExpenseDetail]) : Option[ExpenseDetail] = {
+    toOrFromSavingsAccount(line, expenseDetails)  match {
+      case optEd: Some[ExpenseDetail] => optEd
+      case None => checkForHusleie(line, expenseDetails) match  {
+        case optEd: Some[ExpenseDetail] => optEd
+        case None => checkForExtraMortage(line, expenseDetails) match {
+          case optEd: Some[ExpenseDetail] => optEd
+          case None => checkForExtraCarMortage(line, expenseDetails)
+        }
+      }
+    }
+  }
+  
+  def toOrFromSavingsAccount(line: String, expenseDetails : List[ExpenseDetail]) : Option[ExpenseDetail] = {
     val savingsAccounts = readAsList("sparekontoer")
     val splittedLine = line.split(";")
     val toAccount = splittedLine.length == 8 match {
       case true => splittedLine(7)
       case false => splittedLine(8)
     }
-    savingsAccounts.contains(toAccount) match {
+    val fromAccount = splittedLine.length == 8 match {
+      case true => splittedLine(6)
+      case false => splittedLine(7)
+    }
+    savingsAccounts.contains(toAccount) || savingsAccounts.contains(fromAccount) match {
       case true => {
         expenseDetails.find(ed => ed.description.equals("Fast sparing"))
+      }
+      case false => Option.empty 
+    }
+//    checkIfToAccountIsInList(line, readAsList("sparekontoer"), "Fast sparing", expenseDetails)
+  }
+  
+  def checkForHusleie(line: String, expenseDetails : List[ExpenseDetail]) : Option[ExpenseDetail] = {
+    checkIfToAccountIsInList(line, readAsList("husleie"), "Husleie", expenseDetails)
+  }
+  
+  def checkForExtraMortage(line: String, expenseDetails : List[ExpenseDetail]) : Option[ExpenseDetail] = {
+     checkIfToAccountIsInList(line, readAsList("ekstralan"), "Boliglån", expenseDetails)
+  }
+  
+  def checkForExtraCarMortage(line: String, expenseDetails : List[ExpenseDetail]) : Option[ExpenseDetail] = {
+     checkIfToAccountIsInList(line, readAsList("ekstrabillan"), "Billån", expenseDetails)
+  }
+  
+  def checkIfToAccountIsInList(line: String, accountList : List[String], expenseDetailName: String, expenseDetails : List[ExpenseDetail]) : Option[ExpenseDetail] = {
+    val splittedLine = line.split(";")
+    val toAccount = splittedLine(splittedLine.size -1)
+    accountList.contains(toAccount) match {
+      case true => {
+        expenseDetails.find(ed => ed.description.equals(expenseDetailName))
       }
       case false => Option.empty 
     }
@@ -236,4 +268,14 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
       }
     }
   }
+
+  def notIternal(line: String) = {
+    val fasteAccounts = readAsList("faste")
+    
+    val splittedLine = line.split(";")
+    val toAccount = splittedLine(splittedLine.size -1)
+    !fasteAccounts.contains(toAccount) 
+    
+  }
+  
 }
