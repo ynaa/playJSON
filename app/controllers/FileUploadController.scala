@@ -223,6 +223,7 @@ class FileUploadController @Inject()(db: MyEconomyDbApi)  extends Controller {
   }
 
   def createDecimal(amount : String) : Int = {
+    println(amount)
     val amm = amount.replace(" ", "")
     val index = amm.indexOf(",")
     if (index > 0)
